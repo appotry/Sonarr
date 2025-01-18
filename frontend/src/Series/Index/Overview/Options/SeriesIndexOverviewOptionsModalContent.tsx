@@ -11,12 +11,28 @@ import ModalFooter from 'Components/Modal/ModalFooter';
 import ModalHeader from 'Components/Modal/ModalHeader';
 import { inputTypes } from 'Helpers/Props';
 import { setSeriesOverviewOption } from 'Store/Actions/seriesIndexActions';
+import translate from 'Utilities/String/translate';
 import selectOverviewOptions from '../selectOverviewOptions';
 
 const posterSizeOptions = [
-  { key: 'small', value: 'Small' },
-  { key: 'medium', value: 'Medium' },
-  { key: 'large', value: 'Large' },
+  {
+    key: 'small',
+    get value() {
+      return translate('Small');
+    },
+  },
+  {
+    key: 'medium',
+    get value() {
+      return translate('Medium');
+    },
+  },
+  {
+    key: 'large',
+    get value() {
+      return translate('Large');
+    },
+  },
 ];
 
 interface SeriesIndexOverviewOptionsModalContentProps {
@@ -39,6 +55,7 @@ function SeriesIndexOverviewOptionsModalContent(
     showSeasonCount,
     showPath,
     showSizeOnDisk,
+    showTags,
     showSearchAction,
   } = useSelector(selectOverviewOptions);
 
@@ -53,12 +70,12 @@ function SeriesIndexOverviewOptionsModalContent(
 
   return (
     <ModalContent onModalClose={onModalClose}>
-      <ModalHeader>Overview Options</ModalHeader>
+      <ModalHeader>{translate('OverviewOptions')}</ModalHeader>
 
       <ModalBody>
         <Form>
           <FormGroup>
-            <FormLabel>Poster Size</FormLabel>
+            <FormLabel>{translate('PosterSize')}</FormLabel>
 
             <FormInputGroup
               type={inputTypes.SELECT}
@@ -70,19 +87,19 @@ function SeriesIndexOverviewOptionsModalContent(
           </FormGroup>
 
           <FormGroup>
-            <FormLabel>Detailed Progress Bar</FormLabel>
+            <FormLabel>{translate('DetailedProgressBar')}</FormLabel>
 
             <FormInputGroup
               type={inputTypes.CHECK}
               name="detailedProgressBar"
               value={detailedProgressBar}
-              helpText="Show text on progress bar"
+              helpText={translate('DetailedProgressBarHelpText')}
               onChange={onOverviewOptionChange}
             />
           </FormGroup>
 
           <FormGroup>
-            <FormLabel>Show Monitored</FormLabel>
+            <FormLabel>{translate('ShowMonitored')}</FormLabel>
 
             <FormInputGroup
               type={inputTypes.CHECK}
@@ -93,7 +110,7 @@ function SeriesIndexOverviewOptionsModalContent(
           </FormGroup>
 
           <FormGroup>
-            <FormLabel>Show Network</FormLabel>
+            <FormLabel>{translate('ShowNetwork')}</FormLabel>
 
             <FormInputGroup
               type={inputTypes.CHECK}
@@ -104,7 +121,7 @@ function SeriesIndexOverviewOptionsModalContent(
           </FormGroup>
 
           <FormGroup>
-            <FormLabel>Show Quality Profile</FormLabel>
+            <FormLabel>{translate('ShowQualityProfile')}</FormLabel>
 
             <FormInputGroup
               type={inputTypes.CHECK}
@@ -115,7 +132,7 @@ function SeriesIndexOverviewOptionsModalContent(
           </FormGroup>
 
           <FormGroup>
-            <FormLabel>Show Previous Airing</FormLabel>
+            <FormLabel>{translate('ShowPreviousAiring')}</FormLabel>
 
             <FormInputGroup
               type={inputTypes.CHECK}
@@ -126,7 +143,7 @@ function SeriesIndexOverviewOptionsModalContent(
           </FormGroup>
 
           <FormGroup>
-            <FormLabel>Show Date Added</FormLabel>
+            <FormLabel>{translate('ShowDateAdded')}</FormLabel>
 
             <FormInputGroup
               type={inputTypes.CHECK}
@@ -137,7 +154,7 @@ function SeriesIndexOverviewOptionsModalContent(
           </FormGroup>
 
           <FormGroup>
-            <FormLabel>Show Season Count</FormLabel>
+            <FormLabel>{translate('ShowSeasonCount')}</FormLabel>
 
             <FormInputGroup
               type={inputTypes.CHECK}
@@ -148,7 +165,7 @@ function SeriesIndexOverviewOptionsModalContent(
           </FormGroup>
 
           <FormGroup>
-            <FormLabel>Show Path</FormLabel>
+            <FormLabel>{translate('ShowPath')}</FormLabel>
 
             <FormInputGroup
               type={inputTypes.CHECK}
@@ -159,7 +176,7 @@ function SeriesIndexOverviewOptionsModalContent(
           </FormGroup>
 
           <FormGroup>
-            <FormLabel>Show Size on Disk</FormLabel>
+            <FormLabel>{translate('ShowSizeOnDisk')}</FormLabel>
 
             <FormInputGroup
               type={inputTypes.CHECK}
@@ -170,13 +187,24 @@ function SeriesIndexOverviewOptionsModalContent(
           </FormGroup>
 
           <FormGroup>
-            <FormLabel>Show Search</FormLabel>
+            <FormLabel>{translate('ShowTags')}</FormLabel>
+
+            <FormInputGroup
+              type={inputTypes.CHECK}
+              name="showTags"
+              value={showTags}
+              onChange={onOverviewOptionChange}
+            />
+          </FormGroup>
+
+          <FormGroup>
+            <FormLabel>{translate('ShowSearch')}</FormLabel>
 
             <FormInputGroup
               type={inputTypes.CHECK}
               name="showSearchAction"
               value={showSearchAction}
-              helpText="Show search button on hover"
+              helpText={translate('ShowSearchHelpText')}
               onChange={onOverviewOptionChange}
             />
           </FormGroup>
@@ -184,7 +212,7 @@ function SeriesIndexOverviewOptionsModalContent(
       </ModalBody>
 
       <ModalFooter>
-        <Button onPress={onModalClose}>Close</Button>
+        <Button onPress={onModalClose}>{translate('Close')}</Button>
       </ModalFooter>
     </ModalContent>
   );

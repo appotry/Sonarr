@@ -4,6 +4,7 @@ import Icon from 'Components/Icon';
 import MonitorToggleButton from 'Components/MonitorToggleButton';
 import VirtualTableRowCell from 'Components/Table/Cells/TableRowCell';
 import { icons } from 'Helpers/Props';
+import { SeriesStatus } from 'Series/Series';
 import { getSeriesStatusDetails } from 'Series/SeriesStatus';
 import { toggleSeriesMonitored } from 'Store/Actions/seriesActions';
 import translate from 'Utilities/String/translate';
@@ -13,7 +14,7 @@ interface SeriesStatusCellProps {
   className: string;
   seriesId: number;
   monitored: boolean;
-  status: string;
+  status: SeriesStatus;
   isSelectMode: boolean;
   isSaving: boolean;
   component?: React.ElementType;
@@ -53,8 +54,8 @@ function SeriesStatusCell(props: SeriesStatusCellProps) {
           name={monitored ? icons.MONITORED : icons.UNMONITORED}
           title={
             monitored
-              ? translate('Series is monitored')
-              : translate('Series is unmonitored')
+              ? translate('SeriesIsMonitored')
+              : translate('SeriesIsUnmonitored')
           }
         />
       )}

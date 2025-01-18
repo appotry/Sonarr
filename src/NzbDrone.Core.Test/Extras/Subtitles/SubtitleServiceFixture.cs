@@ -120,7 +120,7 @@ namespace NzbDrone.Core.Test.Extras.Subtitles
 
             results.Count.Should().Be(expectedOutputs.Length);
 
-            for (int i = 0; i < expectedOutputs.Length; i++)
+            for (var i = 0; i < expectedOutputs.Length; i++)
             {
                 results[i].RelativePath.AsOsAgnostic().PathEquals(Path.Combine("Season 1", expectedOutputs[i]).AsOsAgnostic()).Should().Be(true);
             }
@@ -149,7 +149,7 @@ namespace NzbDrone.Core.Test.Extras.Subtitles
 
             results.Count.Should().Be(expectedOutputs.Length);
 
-            for (int i = 0; i < expectedOutputs.Length; i++)
+            for (var i = 0; i < expectedOutputs.Length; i++)
             {
                 results[i].RelativePath.AsOsAgnostic().PathEquals(Path.Combine("Season 1", expectedOutputs[i]).AsOsAgnostic()).Should().Be(true);
             }
@@ -170,7 +170,7 @@ namespace NzbDrone.Core.Test.Extras.Subtitles
                 sampleFile
             };
 
-            Mocker.GetMock<IDiskProvider>().Setup(s => s.GetFiles(It.IsAny<string>(), SearchOption.AllDirectories))
+            Mocker.GetMock<IDiskProvider>().Setup(s => s.GetFiles(It.IsAny<string>(), true))
                   .Returns(videoFiles);
 
             Mocker.GetMock<IDetectSample>().Setup(s => s.IsSample(It.IsAny<Series>(), sampleFile, It.IsAny<bool>()))
@@ -198,7 +198,7 @@ namespace NzbDrone.Core.Test.Extras.Subtitles
                 Path.Combine(_series.Path, "Season 1", "Series Title - S01E01.sample.mkv").AsOsAgnostic()
             };
 
-            Mocker.GetMock<IDiskProvider>().Setup(s => s.GetFiles(It.IsAny<string>(), SearchOption.AllDirectories))
+            Mocker.GetMock<IDiskProvider>().Setup(s => s.GetFiles(It.IsAny<string>(), true))
                   .Returns(videoFiles);
 
             var results = Subject.ImportFiles(_localEpisode, _episodeFile, new List<string> { subtitleFile }, true).ToList();

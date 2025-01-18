@@ -1,16 +1,21 @@
+using System.Text.RegularExpressions;
 using System.Xml.Linq;
 using NLog;
+using NzbDrone.Common.Extensions;
 using NzbDrone.Core.Indexers;
-using NzbDrone.Core.Indexers.Exceptions;
 using NzbDrone.Core.Parser.Model;
 
 namespace NzbDrone.Core.ImportLists.Rss.Plex
 {
     public class PlexRssImportParser : RssImportBaseParser
     {
+        private readonly Logger _logger;
+        private static readonly Regex ImdbIdRegex = new (@"(tt\d{7,8})", RegexOptions.IgnoreCase | RegexOptions.Compiled);
+
         public PlexRssImportParser(Logger logger)
             : base(logger)
         {
+            _logger = logger;
         }
 
         protected override ImportListItemInfo ProcessItem(XElement item)
@@ -29,17 +34,44 @@ namespace NzbDrone.Core.ImportLists.Rss.Plex
 
             var guid = item.TryGetValue("guid", string.Empty);
 
-            if (int.TryParse(guid.Replace("tvdb://", ""), out var tvdbId))
+            if (guid.IsNotNullOrWhiteSpace())
             {
-                info.TvdbId = tvdbId;
+                if (guid.StartsWith("imdb://"))
+                {
+                    info.ImdbId = ParseImdbId(guid.Replace("imdb://", ""));
+                }
+
+                if (int.TryParse(guid.Replace("tvdb://", ""), out var tvdbId))
+                {
+                    info.TvdbId = tvdbId;
+                }
+
+                if (int.TryParse(guid.Replace("tmdb://", ""), out var tmdbId))
+                {
+                    info.TmdbId = tmdbId;
+                }
             }
 
-            if (info.TvdbId == 0)
+            if (info.ImdbId.IsNullOrWhiteSpace() && info.TvdbId == 0 && info.TmdbId == 0)
             {
-                throw new UnsupportedFeedException("Each item in the RSS feed must have a guid element with a TVDB ID");
+                _logger.Warn("Each item in the RSS feed must have a guid element with a IMDB ID, TVDB ID or TMDB ID: '{0}'", info.Title);
+
+                return null;
             }
 
             return info;
+        }
+
+        private static string ParseImdbId(string value)
+        {
+            if (value.IsNullOrWhiteSpace())
+            {
+                return null;
+            }
+
+            var match = ImdbIdRegex.Match(value);
+
+            return match.Success ? match.Groups[1].Value : null;
         }
     }
 }

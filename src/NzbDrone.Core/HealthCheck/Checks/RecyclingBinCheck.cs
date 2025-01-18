@@ -1,6 +1,8 @@
+using System.Collections.Generic;
 using NzbDrone.Common.Disk;
 using NzbDrone.Common.Extensions;
 using NzbDrone.Core.Configuration;
+using NzbDrone.Core.Localization;
 using NzbDrone.Core.MediaFiles.Events;
 
 namespace NzbDrone.Core.HealthCheck.Checks
@@ -12,7 +14,8 @@ namespace NzbDrone.Core.HealthCheck.Checks
         private readonly IConfigService _configService;
         private readonly IDiskProvider _diskProvider;
 
-        public RecyclingBinCheck(IConfigService configService, IDiskProvider diskProvider)
+        public RecyclingBinCheck(IConfigService configService, IDiskProvider diskProvider, ILocalizationService localizationService)
+            : base(localizationService)
         {
             _configService = configService;
             _diskProvider = diskProvider;
@@ -29,7 +32,13 @@ namespace NzbDrone.Core.HealthCheck.Checks
 
             if (!_diskProvider.FolderWritable(recycleBin))
             {
-                return new HealthCheck(GetType(), HealthCheckResult.Error, $"Unable to write to configured recycling bin folder: {recycleBin}. Ensure this path exists and is writable by the user running Sonarr", "#cannot-write-recycle-bin");
+                return new HealthCheck(GetType(),
+                    HealthCheckResult.Error,
+                    _localizationService.GetLocalizedString("RecycleBinUnableToWriteHealthCheckMessage", new Dictionary<string, object>
+                    {
+                        { "path", recycleBin }
+                    }),
+                    "#cannot-write-recycle-bin");
             }
 
             return new HealthCheck(GetType());

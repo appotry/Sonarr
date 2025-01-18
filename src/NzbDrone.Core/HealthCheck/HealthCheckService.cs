@@ -6,6 +6,7 @@ using NzbDrone.Common.Cache;
 using NzbDrone.Common.EnvironmentInfo;
 using NzbDrone.Common.Messaging;
 using NzbDrone.Common.Reflection;
+using NzbDrone.Common.TPL;
 using NzbDrone.Core.Lifecycle;
 using NzbDrone.Core.Messaging.Commands;
 using NzbDrone.Core.Messaging.Events;
@@ -28,10 +29,11 @@ namespace NzbDrone.Core.HealthCheck
         private readonly IProvideHealthCheck[] _scheduledHealthChecks;
         private readonly Dictionary<Type, IEventDrivenHealthCheck[]> _eventDrivenHealthChecks;
         private readonly IEventAggregator _eventAggregator;
-        private readonly ICacheManager _cacheManager;
         private readonly Logger _logger;
 
         private readonly ICached<HealthCheck> _healthCheckResults;
+        private readonly HashSet<IProvideHealthCheck> _pendingHealthChecks;
+        private readonly Debouncer _debounce;
 
         private bool _hasRunHealthChecksAfterGracePeriod;
         private bool _isRunningHealthChecksAfterGracePeriod;
@@ -39,15 +41,17 @@ namespace NzbDrone.Core.HealthCheck
         public HealthCheckService(IEnumerable<IProvideHealthCheck> healthChecks,
                                   IEventAggregator eventAggregator,
                                   ICacheManager cacheManager,
+                                  IDebounceManager debounceManager,
                                   IRuntimeInfo runtimeInfo,
                                   Logger logger)
         {
             _healthChecks = healthChecks.ToArray();
             _eventAggregator = eventAggregator;
-            _cacheManager = cacheManager;
             _logger = logger;
 
-            _healthCheckResults = _cacheManager.GetCache<HealthCheck>(GetType());
+            _healthCheckResults = cacheManager.GetCache<HealthCheck>(GetType());
+            _pendingHealthChecks = new HashSet<IProvideHealthCheck>();
+            _debounce = debounceManager.CreateDebouncer(ProcessHealthChecks, TimeSpan.FromSeconds(5));
 
             _startupHealthChecks = _healthChecks.Where(v => v.CheckOnStartup).ToArray();
             _scheduledHealthChecks = _healthChecks.Where(v => v.CheckOnSchedule).ToArray();
@@ -74,33 +78,57 @@ namespace NzbDrone.Core.HealthCheck
                 .ToDictionary(g => g.Key, g => g.ToArray());
         }
 
-        private void PerformHealthCheck(IProvideHealthCheck[] healthChecks)
+        private void ProcessHealthChecks()
         {
-            var results = healthChecks.Select(c => c.Check())
-                                       .ToList();
+            List<IProvideHealthCheck> healthChecks;
 
-            foreach (var result in results)
+            lock (_pendingHealthChecks)
             {
-                if (result.Type == HealthCheckResult.Ok)
-                {
-                    var previous = _healthCheckResults.Find(result.Source.Name);
+                healthChecks = _pendingHealthChecks.ToList();
+                _pendingHealthChecks.Clear();
+            }
 
-                    if (previous != null)
+            _debounce.Pause();
+
+            try
+            {
+                var results = healthChecks.Select(c =>
                     {
-                        _eventAggregator.PublishEvent(new HealthCheckRestoredEvent(previous, !_hasRunHealthChecksAfterGracePeriod));
-                    }
+                        _logger.Trace("Check health -> {0}", c.GetType().Name);
+                        var result = c.Check();
+                        _logger.Trace("Check health <- {0}", c.GetType().Name);
 
-                    _healthCheckResults.Remove(result.Source.Name);
-                }
-                else
+                        return result;
+                    })
+                    .ToList();
+
+                foreach (var result in results)
                 {
-                    if (_healthCheckResults.Find(result.Source.Name) == null)
+                    if (result.Type == HealthCheckResult.Ok)
                     {
-                        _eventAggregator.PublishEvent(new HealthCheckFailedEvent(result, !_hasRunHealthChecksAfterGracePeriod));
-                    }
+                        var previous = _healthCheckResults.Find(result.Source.Name);
 
-                    _healthCheckResults.Set(result.Source.Name, result);
+                        if (previous != null)
+                        {
+                            _eventAggregator.PublishEvent(new HealthCheckRestoredEvent(previous, !_hasRunHealthChecksAfterGracePeriod));
+                        }
+
+                        _healthCheckResults.Remove(result.Source.Name);
+                    }
+                    else
+                    {
+                        if (_healthCheckResults.Find(result.Source.Name) == null)
+                        {
+                            _eventAggregator.PublishEvent(new HealthCheckFailedEvent(result, !_hasRunHealthChecksAfterGracePeriod));
+                        }
+
+                        _healthCheckResults.Set(result.Source.Name, result);
+                    }
                 }
+            }
+            finally
+            {
+                _debounce.Resume();
             }
 
             _eventAggregator.PublishEvent(new HealthCheckCompleteEvent());
@@ -108,24 +136,35 @@ namespace NzbDrone.Core.HealthCheck
 
         public void Execute(CheckHealthCommand message)
         {
-            if (message.Trigger == CommandTrigger.Manual)
+            var healthChecks = message.Trigger == CommandTrigger.Manual ? _healthChecks  : _scheduledHealthChecks;
+
+            lock (_pendingHealthChecks)
             {
-                PerformHealthCheck(_healthChecks);
+                foreach (var healthCheck in healthChecks)
+                {
+                    _pendingHealthChecks.Add(healthCheck);
+                }
             }
-            else
-            {
-                PerformHealthCheck(_scheduledHealthChecks);
-            }
+
+            ProcessHealthChecks();
         }
 
         public void HandleAsync(ApplicationStartedEvent message)
         {
-            PerformHealthCheck(_startupHealthChecks);
+            lock (_pendingHealthChecks)
+            {
+                foreach (var healthCheck in _startupHealthChecks)
+                {
+                    _pendingHealthChecks.Add(healthCheck);
+                }
+            }
+
+            ProcessHealthChecks();
         }
 
         public void HandleAsync(IEvent message)
         {
-            if (message is HealthCheckCompleteEvent)
+            if (message is HealthCheckCompleteEvent || message is ApplicationStartedEvent)
             {
                 return;
             }
@@ -137,7 +176,16 @@ namespace NzbDrone.Core.HealthCheck
             {
                 _isRunningHealthChecksAfterGracePeriod = true;
 
-                PerformHealthCheck(_startupHealthChecks);
+                lock (_pendingHealthChecks)
+                {
+                    foreach (var healthCheck in _startupHealthChecks)
+                    {
+                        _pendingHealthChecks.Add(healthCheck);
+                    }
+                }
+
+                // Call it directly so it's not debounced and any alerts can be sent.
+                ProcessHealthChecks();
 
                 // Update after running health checks so new failure notifications aren't sent 2x.
                 _hasRunHealthChecksAfterGracePeriod = true;
@@ -153,8 +201,7 @@ namespace NzbDrone.Core.HealthCheck
                 _isRunningHealthChecksAfterGracePeriod = false;
             }
 
-            IEventDrivenHealthCheck[] checks;
-            if (!_eventDrivenHealthChecks.TryGetValue(message.GetType(), out checks))
+            if (!_eventDrivenHealthChecks.TryGetValue(message.GetType(), out var checks))
             {
                 return;
             }
@@ -174,9 +221,12 @@ namespace NzbDrone.Core.HealthCheck
                 }
             }
 
-            // TODO: Add debounce
+            lock (_pendingHealthChecks)
+            {
+                filteredChecks.ForEach(h => _pendingHealthChecks.Add(h));
+            }
 
-            PerformHealthCheck(filteredChecks.ToArray());
+            _debounce.Execute();
         }
     }
 }

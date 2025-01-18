@@ -2,6 +2,7 @@ using System.IO;
 using System.Linq;
 using NLog;
 using NzbDrone.Common.Disk;
+using NzbDrone.Common.Extensions;
 using NzbDrone.Core.Configuration;
 using NzbDrone.Core.MediaFiles.Events;
 using NzbDrone.Core.Messaging.Events;
@@ -12,6 +13,7 @@ namespace NzbDrone.Core.MediaFiles.MediaInfo
     public interface IUpdateMediaInfo
     {
         bool Update(EpisodeFile episodeFile, Series series);
+        bool UpdateMediaInfo(EpisodeFile episodeFile, Series series);
     }
 
     public class UpdateMediaInfoService : IUpdateMediaInfo, IHandle<SeriesScannedEvent>
@@ -65,9 +67,9 @@ namespace NzbDrone.Core.MediaFiles.MediaInfo
             return UpdateMediaInfo(episodeFile, series);
         }
 
-        private bool UpdateMediaInfo(EpisodeFile episodeFile, Series series)
+        public bool UpdateMediaInfo(EpisodeFile episodeFile, Series series)
         {
-            var path = Path.Combine(series.Path, episodeFile.RelativePath);
+            var path = episodeFile.Path.IsNotNullOrWhiteSpace() ? episodeFile.Path : Path.Combine(series.Path, episodeFile.RelativePath);
 
             if (!_diskProvider.FileExists(path))
             {

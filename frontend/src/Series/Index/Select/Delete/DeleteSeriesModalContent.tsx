@@ -16,6 +16,8 @@ import Series from 'Series/Series';
 import { bulkDeleteSeries, setDeleteOption } from 'Store/Actions/seriesActions';
 import createAllSeriesSelector from 'Store/Selectors/createAllSeriesSelector';
 import { CheckInputChanged } from 'typings/inputs';
+import formatBytes from 'Utilities/Number/formatBytes';
+import translate from 'Utilities/String/translate';
 import styles from './DeleteSeriesModalContent.css';
 
 interface DeleteSeriesModalContentProps {
@@ -84,36 +86,57 @@ function DeleteSeriesModalContent(props: DeleteSeriesModalContentProps) {
     onModalClose,
   ]);
 
+  const { totalEpisodeFileCount, totalSizeOnDisk } = useMemo(() => {
+    return series.reduce(
+      (acc, { statistics = {} }) => {
+        const { episodeFileCount = 0, sizeOnDisk = 0 } = statistics;
+
+        acc.totalEpisodeFileCount += episodeFileCount;
+        acc.totalSizeOnDisk += sizeOnDisk;
+
+        return acc;
+      },
+      {
+        totalEpisodeFileCount: 0,
+        totalSizeOnDisk: 0,
+      }
+    );
+  }, [series]);
+
   return (
     <ModalContent onModalClose={onModalClose}>
-      <ModalHeader>Delete Selected Series</ModalHeader>
+      <ModalHeader>{translate('DeleteSelectedSeries')}</ModalHeader>
 
       <ModalBody>
         <div>
           <FormGroup>
-            <FormLabel>Add List Exclusion</FormLabel>
+            <FormLabel>{translate('AddListExclusion')}</FormLabel>
 
             <FormInputGroup
               type={inputTypes.CHECK}
               name="addImportListExclusion"
               value={addImportListExclusion}
-              helpText="Prevent series from being added to Sonarr by lists"
+              helpText={translate('AddListExclusionSeriesHelpText')}
               onChange={onDeleteOptionChange}
             />
           </FormGroup>
 
           <FormGroup>
-            <FormLabel>{`Delete Series Folder${
-              series.length > 1 ? 's' : ''
-            }`}</FormLabel>
+            <FormLabel>
+              {series.length > 1
+                ? translate('DeleteSeriesFolders')
+                : translate('DeleteSeriesFolder')}
+            </FormLabel>
 
             <FormInputGroup
               type={inputTypes.CHECK}
               name="deleteFiles"
               value={deleteFiles}
-              helpText={`Delete Series Folder${
-                series.length > 1 ? 's' : ''
-              } and all contents`}
+              helpText={
+                series.length > 1
+                  ? translate('DeleteSeriesFoldersHelpText')
+                  : translate('DeleteSeriesFolderHelpText')
+              }
               kind={kinds.DANGER}
               onChange={onDeleteFilesChange}
             />
@@ -121,33 +144,61 @@ function DeleteSeriesModalContent(props: DeleteSeriesModalContentProps) {
         </div>
 
         <div className={styles.message}>
-          {`Are you sure you want to delete ${series.length} selected series${
-            deleteFiles ? ' and all contents' : ''
-          }?`}
+          {deleteFiles
+            ? translate('DeleteSeriesFolderCountWithFilesConfirmation', {
+                count: series.length,
+              })
+            : translate('DeleteSeriesFolderCountConfirmation', {
+                count: series.length,
+              })}
         </div>
 
         <ul>
-          {series.map((s) => {
+          {series.map(({ title, path, statistics = {} }) => {
+            const { episodeFileCount = 0, sizeOnDisk = 0 } = statistics;
+
             return (
-              <li key={s.title}>
-                <span>{s.title}</span>
+              <li key={title}>
+                <span>{title}</span>
 
                 {deleteFiles && (
-                  <span className={styles.pathContainer}>
-                    -<span className={styles.path}>{s.path}</span>
+                  <span>
+                    <span className={styles.pathContainer}>
+                      -<span className={styles.path}>{path}</span>
+                    </span>
+
+                    {!!episodeFileCount && (
+                      <span className={styles.statistics}>
+                        (
+                        {translate('DeleteSeriesFolderEpisodeCount', {
+                          episodeFileCount,
+                          size: formatBytes(sizeOnDisk),
+                        })}
+                        )
+                      </span>
+                    )}
                   </span>
                 )}
               </li>
             );
           })}
         </ul>
+
+        {deleteFiles && !!totalEpisodeFileCount ? (
+          <div className={styles.deleteFilesMessage}>
+            {translate('DeleteSeriesFolderEpisodeCount', {
+              episodeFileCount: totalEpisodeFileCount,
+              size: formatBytes(totalSizeOnDisk),
+            })}
+          </div>
+        ) : null}
       </ModalBody>
 
       <ModalFooter>
-        <Button onPress={onModalClose}>Cancel</Button>
+        <Button onPress={onModalClose}>{translate('Cancel')}</Button>
 
         <Button kind={kinds.DANGER} onPress={onDeleteSeriesConfirmed}>
-          Delete
+          {translate('Delete')}
         </Button>
       </ModalFooter>
     </ModalContent>

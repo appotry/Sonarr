@@ -3,7 +3,9 @@ import React, { Component } from 'react';
 import Card from 'Components/Card';
 import Label from 'Components/Label';
 import ConfirmModal from 'Components/Modal/ConfirmModal';
+import TagList from 'Components/TagList';
 import { kinds } from 'Helpers/Props';
+import translate from 'Utilities/String/translate';
 import EditNotificationModalConnector from './EditNotificationModalConnector';
 import styles from './Notification.css';
 
@@ -57,6 +59,7 @@ class Notification extends Component {
       onGrab,
       onDownload,
       onUpgrade,
+      onImportComplete,
       onRename,
       onSeriesAdd,
       onSeriesDelete,
@@ -69,6 +72,7 @@ class Notification extends Component {
       supportsOnGrab,
       supportsOnDownload,
       supportsOnUpgrade,
+      supportsOnImportComplete,
       supportsOnRename,
       supportsOnSeriesAdd,
       supportsOnSeriesDelete,
@@ -77,7 +81,9 @@ class Notification extends Component {
       supportsOnHealthIssue,
       supportsOnHealthRestored,
       supportsOnApplicationUpdate,
-      supportsOnManualInteractionRequired
+      supportsOnManualInteractionRequired,
+      tags,
+      tagList
     } = this.props;
 
     return (
@@ -93,7 +99,7 @@ class Notification extends Component {
         {
           supportsOnGrab && onGrab ?
             <Label kind={kinds.SUCCESS}>
-              On Grab
+              {translate('OnGrab')}
             </Label> :
             null
         }
@@ -101,7 +107,7 @@ class Notification extends Component {
         {
           supportsOnDownload && onDownload ?
             <Label kind={kinds.SUCCESS}>
-              On Import
+              {translate('OnFileImport')}
             </Label> :
             null
         }
@@ -109,7 +115,15 @@ class Notification extends Component {
         {
           supportsOnUpgrade && onDownload && onUpgrade ?
             <Label kind={kinds.SUCCESS}>
-              On Upgrade
+              {translate('OnFileUpgrade')}
+            </Label> :
+            null
+        }
+
+        {
+          supportsOnImportComplete && onImportComplete ?
+            <Label kind={kinds.SUCCESS}>
+              {translate('OnImportComplete')}
             </Label> :
             null
         }
@@ -117,7 +131,7 @@ class Notification extends Component {
         {
           supportsOnRename && onRename ?
             <Label kind={kinds.SUCCESS}>
-              On Rename
+              {translate('OnRename')}
             </Label> :
             null
         }
@@ -125,7 +139,7 @@ class Notification extends Component {
         {
           supportsOnHealthIssue && onHealthIssue ?
             <Label kind={kinds.SUCCESS}>
-              On Health Issue
+              {translate('OnHealthIssue')}
             </Label> :
             null
         }
@@ -133,7 +147,7 @@ class Notification extends Component {
         {
           supportsOnHealthRestored && onHealthRestored ?
             <Label kind={kinds.SUCCESS}>
-              On Health Restored
+              {translate('OnHealthRestored')}
             </Label> :
             null
         }
@@ -141,7 +155,7 @@ class Notification extends Component {
         {
           supportsOnApplicationUpdate && onApplicationUpdate ?
             <Label kind={kinds.SUCCESS}>
-              On Application Update
+              {translate('OnApplicationUpdate')}
             </Label> :
             null
         }
@@ -149,7 +163,7 @@ class Notification extends Component {
         {
           supportsOnSeriesAdd && onSeriesAdd ?
             <Label kind={kinds.SUCCESS}>
-              On Series Add
+              {translate('OnSeriesAdd')}
             </Label> :
             null
         }
@@ -157,7 +171,7 @@ class Notification extends Component {
         {
           supportsOnSeriesDelete && onSeriesDelete ?
             <Label kind={kinds.SUCCESS}>
-              On Series Delete
+              {translate('OnSeriesDelete')}
             </Label> :
             null
         }
@@ -165,7 +179,7 @@ class Notification extends Component {
         {
           supportsOnEpisodeFileDelete && onEpisodeFileDelete ?
             <Label kind={kinds.SUCCESS}>
-              On Episode File Delete
+              {translate('OnEpisodeFileDelete')}
             </Label> :
             null
         }
@@ -173,7 +187,7 @@ class Notification extends Component {
         {
           supportsOnEpisodeFileDeleteForUpgrade && onEpisodeFileDelete && onEpisodeFileDeleteForUpgrade ?
             <Label kind={kinds.SUCCESS}>
-              On Episode File Delete For Upgrade
+              {translate('OnEpisodeFileDeleteForUpgrade')}
             </Label> :
             null
         }
@@ -181,21 +195,26 @@ class Notification extends Component {
         {
           supportsOnManualInteractionRequired && onManualInteractionRequired ?
             <Label kind={kinds.SUCCESS}>
-              On Manual Interaction Required
+              {translate('OnManualInteractionRequired')}
             </Label> :
             null
         }
 
         {
-          !onGrab && !onDownload && !onRename && !onHealthIssue && !onHealthRestored && !onApplicationUpdate && !onSeriesDelete && !onEpisodeFileDelete && !onManualInteractionRequired ?
+          !onGrab && !onDownload && !onRename && !onImportComplete && !onHealthIssue && !onHealthRestored && !onApplicationUpdate && !onSeriesAdd && !onSeriesDelete && !onEpisodeFileDelete && !onManualInteractionRequired ?
             <Label
               kind={kinds.DISABLED}
               outline={true}
             >
-              Disabled
+              {translate('Disabled')}
             </Label> :
             null
         }
+
+        <TagList
+          tags={tags}
+          tagList={tagList}
+        />
 
         <EditNotificationModalConnector
           id={id}
@@ -207,9 +226,9 @@ class Notification extends Component {
         <ConfirmModal
           isOpen={this.state.isDeleteNotificationModalOpen}
           kind={kinds.DANGER}
-          title="Delete Notification"
-          message={`Are you sure you want to delete the notification '${name}'?`}
-          confirmLabel="Delete"
+          title={translate('DeleteNotification')}
+          message={translate('DeleteNotificationMessageText', { name })}
+          confirmLabel={translate('Delete')}
           onConfirm={this.onConfirmDeleteNotification}
           onCancel={this.onDeleteNotificationModalClose}
         />
@@ -224,6 +243,7 @@ Notification.propTypes = {
   onGrab: PropTypes.bool.isRequired,
   onDownload: PropTypes.bool.isRequired,
   onUpgrade: PropTypes.bool.isRequired,
+  onImportComplete: PropTypes.bool.isRequired,
   onRename: PropTypes.bool.isRequired,
   onSeriesAdd: PropTypes.bool.isRequired,
   onSeriesDelete: PropTypes.bool.isRequired,
@@ -235,6 +255,7 @@ Notification.propTypes = {
   onManualInteractionRequired: PropTypes.bool.isRequired,
   supportsOnGrab: PropTypes.bool.isRequired,
   supportsOnDownload: PropTypes.bool.isRequired,
+  supportsOnImportComplete: PropTypes.bool.isRequired,
   supportsOnSeriesAdd: PropTypes.bool.isRequired,
   supportsOnSeriesDelete: PropTypes.bool.isRequired,
   supportsOnEpisodeFileDelete: PropTypes.bool.isRequired,
@@ -245,6 +266,8 @@ Notification.propTypes = {
   supportsOnHealthRestored: PropTypes.bool.isRequired,
   supportsOnApplicationUpdate: PropTypes.bool.isRequired,
   supportsOnManualInteractionRequired: PropTypes.bool.isRequired,
+  tags: PropTypes.arrayOf(PropTypes.number).isRequired,
+  tagList: PropTypes.arrayOf(PropTypes.object).isRequired,
   onConfirmDeleteNotification: PropTypes.func.isRequired
 };
 

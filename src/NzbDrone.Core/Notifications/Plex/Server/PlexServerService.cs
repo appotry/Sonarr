@@ -6,7 +6,9 @@ using System.Text.RegularExpressions;
 using FluentValidation.Results;
 using NLog;
 using NzbDrone.Common.Cache;
+using NzbDrone.Common.Disk;
 using NzbDrone.Common.Extensions;
+using NzbDrone.Core.Localization;
 using NzbDrone.Core.RootFolders;
 using NzbDrone.Core.Tv;
 using NzbDrone.Core.Validation;
@@ -25,13 +27,15 @@ namespace NzbDrone.Core.Notifications.Plex.Server
         private readonly ICached<Version> _versionCache;
         private readonly IPlexServerProxy _plexServerProxy;
         private readonly IRootFolderService _rootFolderService;
+        private readonly ILocalizationService _localizationService;
         private readonly Logger _logger;
 
-        public PlexServerService(ICacheManager cacheManager, IPlexServerProxy plexServerProxy, IRootFolderService rootFolderService, Logger logger)
+        public PlexServerService(ICacheManager cacheManager, IPlexServerProxy plexServerProxy, IRootFolderService rootFolderService, ILocalizationService localizationService, Logger logger)
         {
             _versionCache = cacheManager.GetCache<Version>(GetType(), "versionCache");
             _plexServerProxy = plexServerProxy;
             _rootFolderService = rootFolderService;
+            _localizationService = localizationService;
             _logger = logger;
         }
 
@@ -101,7 +105,17 @@ namespace NzbDrone.Core.Notifications.Plex.Server
             {
                 foreach (var location in section.Locations)
                 {
-                    if (location.Path.PathEquals(rootFolderPath))
+                    var rootFolder = new OsPath(rootFolderPath);
+                    var mappedPath = rootFolder;
+
+                    if (settings.MapTo.IsNotNullOrWhiteSpace())
+                    {
+                        mappedPath = new OsPath(settings.MapTo) + (rootFolder - new OsPath(settings.MapFrom));
+
+                        _logger.Trace("Mapping Path from {0} to {1} for partial scan", rootFolder, mappedPath);
+                    }
+
+                    if (location.Path.PathEquals(mappedPath.FullPath))
                     {
                         _logger.Debug("Updating matching section location, {0}", location.Path);
                         UpdateSectionPath(seriesRelativePath, section, location, settings);
@@ -143,23 +157,23 @@ namespace NzbDrone.Core.Notifications.Plex.Server
 
                 if (sections.Empty())
                 {
-                    return new ValidationFailure("Host", "At least one TV library is required");
+                    return new ValidationFailure("Host", _localizationService.GetLocalizedString("NotificationsPlexValidationNoTvLibraryFound"));
                 }
             }
             catch (PlexAuthenticationException ex)
             {
                 _logger.Error(ex, "Unable to connect to Plex Media Server");
-                return new ValidationFailure("AuthToken", "Invalid authentication token");
+                return new ValidationFailure("AuthToken", _localizationService.GetLocalizedString("NotificationsValidationInvalidAuthenticationToken"));
             }
             catch (PlexException ex)
             {
-                return new NzbDroneValidationFailure("Host", ex.Message);
+                return new NzbDroneValidationFailure("Host", _localizationService.GetLocalizedString("NotificationsValidationUnableToConnect", new Dictionary<string, object> { { "exceptionMessage", ex.Message } }));
             }
             catch (Exception ex)
             {
                 _logger.Error(ex, "Unable to connect to Plex Media Server");
 
-                return new NzbDroneValidationFailure("Host", "Unable to connect to Plex Media Server")
+                return new NzbDroneValidationFailure("Host", _localizationService.GetLocalizedString("NotificationsValidationUnableToConnectToService", new Dictionary<string, object> { { "serviceName", "Plex Media Server" } }))
                        {
                            DetailedDescription = ex.Message
                        };

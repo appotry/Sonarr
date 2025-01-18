@@ -1,9 +1,12 @@
 import { reduce } from 'lodash';
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
+import Alert from 'Components/Alert';
 import LoadingIndicator from 'Components/Loading/LoadingIndicator';
 import PageContent from 'Components/Page/PageContent';
 import PageContentBody from 'Components/Page/PageContentBody';
+import { kinds } from 'Helpers/Props';
+import translate from 'Utilities/String/translate';
 import selectAll from 'Utilities/Table/selectAll';
 import toggleSelected from 'Utilities/Table/toggleSelected';
 import ImportSeriesFooterConnector from './ImportSeriesFooterConnector';
@@ -95,7 +98,7 @@ class ImportSeries extends Component {
     } = this.state;
 
     return (
-      <PageContent title="Import Series">
+      <PageContent title={translate('ImportSeries')}>
         <PageContentBody ref={this.scrollerRef} >
           {
             rootFoldersFetching ? <LoadingIndicator /> : null
@@ -103,7 +106,9 @@ class ImportSeries extends Component {
 
           {
             !rootFoldersFetching && !!rootFoldersError ?
-              <div>Unable to load root folders</div> :
+              <Alert kind={kinds.DANGER}>
+                {translate('RootFoldersLoadError')}
+              </Alert> :
               null
           }
 
@@ -112,9 +117,9 @@ class ImportSeries extends Component {
             !rootFoldersFetching &&
             rootFoldersPopulated &&
             !unmappedFolders.length ?
-              <div>
-                All series in {path} have been imported
-              </div> :
+              <Alert kind={kinds.INFO}>
+                {translate('AllSeriesInRootFolderHaveBeenImported', { path })}
+              </Alert> :
               null
           }
 

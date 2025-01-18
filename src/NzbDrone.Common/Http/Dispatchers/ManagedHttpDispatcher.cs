@@ -1,7 +1,9 @@
 using System;
 using System.IO;
+using System.Linq;
 using System.Net;
 using System.Net.Http;
+using System.Net.NetworkInformation;
 using System.Net.Security;
 using System.Net.Sockets;
 using System.Text;
@@ -29,11 +31,14 @@ namespace NzbDrone.Common.Http.Dispatchers
         private readonly ICached<System.Net.Http.HttpClient> _httpClientCache;
         private readonly ICached<CredentialCache> _credentialCache;
 
+        private readonly Logger _logger;
+
         public ManagedHttpDispatcher(IHttpProxySettingsProvider proxySettingsProvider,
             ICreateManagedWebProxy createManagedWebProxy,
             ICertificateValidationService certificateValidationService,
             IUserAgentBuilder userAgentBuilder,
-            ICacheManager cacheManager)
+            ICacheManager cacheManager,
+            Logger logger)
         {
             _proxySettingsProvider = proxySettingsProvider;
             _createManagedWebProxy = createManagedWebProxy;
@@ -42,11 +47,17 @@ namespace NzbDrone.Common.Http.Dispatchers
 
             _httpClientCache = cacheManager.GetCache<System.Net.Http.HttpClient>(typeof(ManagedHttpDispatcher));
             _credentialCache = cacheManager.GetCache<CredentialCache>(typeof(ManagedHttpDispatcher), "credentialcache");
+
+            _logger = logger;
         }
 
-        public HttpResponse GetResponse(HttpRequest request, CookieContainer cookies)
+        public async Task<HttpResponse> GetResponseAsync(HttpRequest request, CookieContainer cookies)
         {
-            var requestMessage = new HttpRequestMessage(request.Method, (Uri)request.Url);
+            var requestMessage = new HttpRequestMessage(request.Method, (Uri)request.Url)
+            {
+                Version = HttpVersion.Version20,
+                VersionPolicy = HttpVersionPolicy.RequestVersionOrLower
+            };
             requestMessage.Headers.UserAgent.ParseAdd(_userAgentBuilder.GetUserAgent(request.UseSimplifiedUserAgent));
             requestMessage.Headers.ConnectionClose = !request.ConnectionKeepAlive;
 
@@ -99,31 +110,38 @@ namespace NzbDrone.Common.Http.Dispatchers
 
             var httpClient = GetClient(request.Url);
 
-            using var responseMessage = httpClient.Send(requestMessage, HttpCompletionOption.ResponseHeadersRead, cts.Token);
+            try
             {
-                byte[] data = null;
-
-                try
+                using var responseMessage = await httpClient.SendAsync(requestMessage, HttpCompletionOption.ResponseHeadersRead, cts.Token);
                 {
-                    if (request.ResponseStream != null && responseMessage.StatusCode == HttpStatusCode.OK)
+                    byte[] data = null;
+
+                    try
                     {
-                        responseMessage.Content.CopyTo(request.ResponseStream, null, cts.Token);
+                        if (request.ResponseStream != null && responseMessage.StatusCode == HttpStatusCode.OK)
+                        {
+                            await responseMessage.Content.CopyToAsync(request.ResponseStream, null, cts.Token);
+                        }
+                        else
+                        {
+                            data = await responseMessage.Content.ReadAsByteArrayAsync(cts.Token);
+                        }
                     }
-                    else
+                    catch (Exception ex)
                     {
-                        data = responseMessage.Content.ReadAsByteArrayAsync(cts.Token).GetAwaiter().GetResult();
+                        throw new WebException("Failed to read complete http response", ex, WebExceptionStatus.ReceiveFailure, null);
                     }
+
+                    var headers = responseMessage.Headers.ToNameValueCollection();
+
+                    headers.Add(responseMessage.Content.Headers.ToNameValueCollection());
+
+                    return new HttpResponse(request, new HttpHeader(headers), data, responseMessage.StatusCode, responseMessage.Version);
                 }
-                catch (Exception ex)
-                {
-                    throw new WebException("Failed to read complete http response", ex, WebExceptionStatus.ReceiveFailure, null);
-                }
-
-                var headers = responseMessage.Headers.ToNameValueCollection();
-
-                headers.Add(responseMessage.Content.Headers.ToNameValueCollection());
-
-                return new HttpResponse(request, new HttpHeader(headers), data, responseMessage.StatusCode);
+            }
+            catch (OperationCanceledException ex) when (cts.IsCancellationRequested)
+            {
+                throw new WebException("Http request timed out", ex.InnerException, WebExceptionStatus.Timeout, null);
             }
         }
 
@@ -160,6 +178,8 @@ namespace NzbDrone.Common.Http.Dispatchers
 
             var client = new System.Net.Http.HttpClient(handler)
             {
+                DefaultRequestVersion = HttpVersion.Version20,
+                DefaultVersionPolicy = HttpVersionPolicy.RequestVersionOrLower,
                 Timeout = Timeout.InfiniteTimeSpan
             };
 
@@ -235,7 +255,27 @@ namespace NzbDrone.Common.Http.Dispatchers
             return _credentialCache.Get("credentialCache", () => new CredentialCache());
         }
 
-        private static async ValueTask<Stream> onConnect(SocketsHttpConnectionContext context, CancellationToken cancellationToken)
+        private bool HasRoutableIPv4Address()
+        {
+            // Get all IPv4 addresses from all interfaces and return true if there are any with non-loopback addresses
+            try
+            {
+                var networkInterfaces = NetworkInterface.GetAllNetworkInterfaces();
+
+                return networkInterfaces.Any(ni =>
+                    ni.OperationalStatus == OperationalStatus.Up &&
+                    ni.GetIPProperties().UnicastAddresses.Any(ip =>
+                        ip.Address.AddressFamily == AddressFamily.InterNetwork &&
+                        !IPAddress.IsLoopback(ip.Address)));
+            }
+            catch (Exception e)
+            {
+                _logger.Debug(e, "Caught exception while GetAllNetworkInterfaces assuming IPv4 connectivity: {0}", e.Message);
+                return true;
+            }
+        }
+
+        private async ValueTask<Stream> onConnect(SocketsHttpConnectionContext context, CancellationToken cancellationToken)
         {
             // Until .NET supports an implementation of Happy Eyeballs (https://tools.ietf.org/html/rfc8305#section-2), let's make IPv4 fallback work in a simple way.
             // This issue is being tracked at https://github.com/dotnet/runtime/issues/26177 and expected to be fixed in .NET 6.
@@ -258,10 +298,10 @@ namespace NzbDrone.Common.Http.Dispatchers
                 }
                 catch
                 {
-                    // very naively fallback to ipv4 permanently for this execution based on the response of the first connection attempt.
-                    // note that this may cause users to eventually get switched to ipv4 (on a random failure when they are switching networks, for instance)
-                    // but in the interest of keeping this implementation simple, this is acceptable.
-                    useIPv6 = false;
+                    // Do not retry IPv6 if a routable IPv4 address is available, otherwise continue to attempt IPv6 connections.
+                    var routableIPv4 = HasRoutableIPv4Address();
+                    _logger.Info("IPv4 is available: {0}, IPv6 will be {1}", routableIPv4, routableIPv4 ? "disabled" : "left enabled");
+                    useIPv6 = !routableIPv4;
                 }
                 finally
                 {

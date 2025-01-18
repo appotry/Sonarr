@@ -182,10 +182,20 @@ namespace NzbDrone.Mono.Disk
             try
             {
                 mounts.AddRange(GetDriveInfoMounts()
-                        .Select(d => new DriveInfoMount(d, FindDriveType.Find(d.DriveFormat)))
-                        .Where(d => d.DriveType == DriveType.Fixed ||
-                                d.DriveType == DriveType.Network ||
-                                d.DriveType == DriveType.Removable));
+                    .Select(d =>
+                    {
+                        try
+                        {
+                            return new DriveInfoMount(d, FindDriveType.Find(d.DriveFormat));
+                        }
+                        catch (Exception ex)
+                        {
+                            _logger.Debug(ex, "Failed to fetch drive info for mount point: {0}", d.Name);
+
+                            return null;
+                        }
+                    })
+                    .Where(d => d is { DriveType: DriveType.Fixed or DriveType.Network or DriveType.Removable }));
             }
             catch (Exception e)
             {
@@ -466,9 +476,7 @@ namespace NzbDrone.Mono.Disk
                 return UNCHANGED_ID;
             }
 
-            uint userId;
-
-            if (uint.TryParse(user, out userId))
+            if (uint.TryParse(user, out var userId))
             {
                 return userId;
             }
@@ -490,9 +498,7 @@ namespace NzbDrone.Mono.Disk
                 return UNCHANGED_ID;
             }
 
-            uint groupId;
-
-            if (uint.TryParse(group, out groupId))
+            if (uint.TryParse(group, out var groupId))
             {
                 return groupId;
             }

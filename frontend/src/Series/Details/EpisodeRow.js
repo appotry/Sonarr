@@ -1,19 +1,26 @@
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
+import Icon from 'Components/Icon';
 import MonitorToggleButton from 'Components/MonitorToggleButton';
-import RelativeDateCellConnector from 'Components/Table/Cells/RelativeDateCellConnector';
+import RelativeDateCell from 'Components/Table/Cells/RelativeDateCell';
 import TableRowCell from 'Components/Table/Cells/TableRowCell';
 import TableRow from 'Components/Table/TableRow';
+import Popover from 'Components/Tooltip/Popover';
+import Tooltip from 'Components/Tooltip/Tooltip';
 import EpisodeFormats from 'Episode/EpisodeFormats';
 import EpisodeNumber from 'Episode/EpisodeNumber';
-import EpisodeSearchCellConnector from 'Episode/EpisodeSearchCellConnector';
-import EpisodeStatusConnector from 'Episode/EpisodeStatusConnector';
+import EpisodeSearchCell from 'Episode/EpisodeSearchCell';
+import EpisodeStatus from 'Episode/EpisodeStatus';
 import EpisodeTitleLink from 'Episode/EpisodeTitleLink';
-import EpisodeFileLanguageConnector from 'EpisodeFile/EpisodeFileLanguageConnector';
-import MediaInfoConnector from 'EpisodeFile/MediaInfoConnector';
+import IndexerFlags from 'Episode/IndexerFlags';
+import EpisodeFileLanguages from 'EpisodeFile/EpisodeFileLanguages';
+import MediaInfo from 'EpisodeFile/MediaInfo';
 import * as mediaInfoTypes from 'EpisodeFile/mediaInfoTypes';
+import { icons, kinds, tooltipPositions } from 'Helpers/Props';
 import formatBytes from 'Utilities/Number/formatBytes';
+import formatCustomFormatScore from 'Utilities/Number/formatCustomFormatScore';
 import formatRuntime from 'Utilities/Number/formatRuntime';
+import translate from 'Utilities/String/translate';
 import styles from './EpisodeRow.css';
 
 class EpisodeRow extends Component {
@@ -61,6 +68,7 @@ class EpisodeRow extends Component {
       sceneAbsoluteEpisodeNumber,
       airDateUtc,
       runtime,
+      finaleType,
       title,
       useSceneNumbering,
       unverifiedSceneNumbering,
@@ -72,6 +80,8 @@ class EpisodeRow extends Component {
       episodeFileSize,
       releaseGroup,
       customFormats,
+      customFormatScore,
+      indexerFlags,
       alternateTitles,
       columns
     } = this.props;
@@ -137,6 +147,8 @@ class EpisodeRow extends Component {
                     episodeId={id}
                     seriesId={seriesId}
                     episodeTitle={title}
+                    episodeEntity="episodes"
+                    finaleType={finaleType}
                     showOpenSeriesButton={false}
                   />
                 </TableRowCell>
@@ -165,7 +177,7 @@ class EpisodeRow extends Component {
 
             if (name === 'airDateUtc') {
               return (
-                <RelativeDateCellConnector
+                <RelativeDateCell
                   key={name}
                   date={airDateUtc}
                 />
@@ -193,13 +205,31 @@ class EpisodeRow extends Component {
               );
             }
 
+            if (name === 'customFormatScore') {
+              return (
+                <TableRowCell
+                  key={name}
+                  className={styles.customFormatScore}
+                >
+                  <Tooltip
+                    anchor={formatCustomFormatScore(
+                      customFormatScore,
+                      customFormats.length
+                    )}
+                    tooltip={<EpisodeFormats formats={customFormats} />}
+                    position={tooltipPositions.LEFT}
+                  />
+                </TableRowCell>
+              );
+            }
+
             if (name === 'languages') {
               return (
                 <TableRowCell
                   key={name}
                   className={styles.languages}
                 >
-                  <EpisodeFileLanguageConnector
+                  <EpisodeFileLanguages
                     episodeFileId={episodeFileId}
                   />
                 </TableRowCell>
@@ -212,7 +242,7 @@ class EpisodeRow extends Component {
                   key={name}
                   className={styles.audio}
                 >
-                  <MediaInfoConnector
+                  <MediaInfo
                     type={mediaInfoTypes.AUDIO}
                     episodeFileId={episodeFileId}
                   />
@@ -226,7 +256,7 @@ class EpisodeRow extends Component {
                   key={name}
                   className={styles.audioLanguages}
                 >
-                  <MediaInfoConnector
+                  <MediaInfo
                     type={mediaInfoTypes.AUDIO_LANGUAGES}
                     episodeFileId={episodeFileId}
                   />
@@ -240,7 +270,7 @@ class EpisodeRow extends Component {
                   key={name}
                   className={styles.subtitles}
                 >
-                  <MediaInfoConnector
+                  <MediaInfo
                     type={mediaInfoTypes.SUBTITLES}
                     episodeFileId={episodeFileId}
                   />
@@ -254,7 +284,7 @@ class EpisodeRow extends Component {
                   key={name}
                   className={styles.video}
                 >
-                  <MediaInfoConnector
+                  <MediaInfo
                     type={mediaInfoTypes.VIDEO}
                     episodeFileId={episodeFileId}
                   />
@@ -268,7 +298,7 @@ class EpisodeRow extends Component {
                   key={name}
                   className={styles.videoDynamicRangeType}
                 >
-                  <MediaInfoConnector
+                  <MediaInfo
                     type={mediaInfoTypes.VIDEO_DYNAMIC_RANGE_TYPE}
                     episodeFileId={episodeFileId}
                   />
@@ -298,13 +328,31 @@ class EpisodeRow extends Component {
               );
             }
 
+            if (name === 'indexerFlags') {
+              return (
+                <TableRowCell
+                  key={name}
+                  className={styles.indexerFlags}
+                >
+                  {indexerFlags ? (
+                    <Popover
+                      anchor={<Icon name={icons.FLAG} kind={kinds.PRIMARY} />}
+                      title={translate('IndexerFlags')}
+                      body={<IndexerFlags indexerFlags={indexerFlags} />}
+                      position={tooltipPositions.LEFT}
+                    />
+                  ) : null}
+                </TableRowCell>
+              );
+            }
+
             if (name === 'status') {
               return (
                 <TableRowCell
                   key={name}
                   className={styles.status}
                 >
-                  <EpisodeStatusConnector
+                  <EpisodeStatus
                     episodeId={id}
                     episodeFileId={episodeFileId}
                   />
@@ -314,9 +362,10 @@ class EpisodeRow extends Component {
 
             if (name === 'actions') {
               return (
-                <EpisodeSearchCellConnector
+                <EpisodeSearchCell
                   key={name}
                   episodeId={id}
+                  episodeEntity='episodes'
                   seriesId={seriesId}
                   episodeTitle={title}
                 />
@@ -344,6 +393,7 @@ EpisodeRow.propTypes = {
   sceneAbsoluteEpisodeNumber: PropTypes.number,
   airDateUtc: PropTypes.string,
   runtime: PropTypes.number,
+  finaleType: PropTypes.string,
   title: PropTypes.string.isRequired,
   isSaving: PropTypes.bool,
   useSceneNumbering: PropTypes.bool,
@@ -355,6 +405,8 @@ EpisodeRow.propTypes = {
   episodeFileSize: PropTypes.number,
   releaseGroup: PropTypes.string,
   customFormats: PropTypes.arrayOf(PropTypes.object),
+  customFormatScore: PropTypes.number.isRequired,
+  indexerFlags: PropTypes.number.isRequired,
   mediaInfo: PropTypes.object,
   alternateTitles: PropTypes.arrayOf(PropTypes.object).isRequired,
   columns: PropTypes.arrayOf(PropTypes.object).isRequired,
@@ -363,7 +415,8 @@ EpisodeRow.propTypes = {
 
 EpisodeRow.defaultProps = {
   alternateTitles: [],
-  customFormats: []
+  customFormats: [],
+  indexerFlags: 0
 };
 
 export default EpisodeRow;

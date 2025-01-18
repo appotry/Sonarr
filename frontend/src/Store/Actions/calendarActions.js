@@ -8,6 +8,7 @@ import { filterBuilderTypes, filterBuilderValueTypes, filterTypes } from 'Helper
 import { createThunk, handleThunks } from 'Store/thunks';
 import createAjaxRequest from 'Utilities/createAjaxRequest';
 import findSelectedFilters from 'Utilities/Filter/findSelectedFilters';
+import translate from 'Utilities/String/translate';
 import { set, update } from './baseActions';
 import { executeCommandHelper } from './commandActions';
 import createHandleActions from './Creators/createHandleActions';
@@ -51,12 +52,10 @@ export const defaultState = {
 
   selectedFilterKey: 'monitored',
 
-  customFilters: [],
-
   filters: [
     {
       key: 'all',
-      label: 'All',
+      label: () => translate('All'),
       filters: [
         {
           key: 'unmonitored',
@@ -67,7 +66,7 @@ export const defaultState = {
     },
     {
       key: 'monitored',
-      label: 'Monitored Only',
+      label: () => translate('MonitoredOnly'),
       filters: [
         {
           key: 'unmonitored',
@@ -81,13 +80,13 @@ export const defaultState = {
   filterBuilderProps: [
     {
       name: 'unmonitored',
-      label: 'Include Unmonitored',
+      label: () => translate('IncludeUnmonitored'),
       type: filterBuilderTypes.EQUAL,
       valueType: filterBuilderValueTypes.BOOL
     },
     {
       name: 'tags',
-      label: 'Tags',
+      label: () => translate('Tags'),
       type: filterBuilderTypes.CONTAINS,
       valueType: filterBuilderValueTypes.TAG
     }
@@ -98,7 +97,7 @@ export const persistState = [
   'calendar.view',
   'calendar.selectedFilterKey',
   'calendar.options',
-  'seriesIndex.customFilters'
+  'calendar.customFilters'
 ];
 
 //

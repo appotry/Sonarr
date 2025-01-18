@@ -9,7 +9,8 @@ import { useDispatch, useSelector } from 'react-redux';
 import { SelectProvider } from 'App/SelectContext';
 import ClientSideCollectionAppState from 'App/State/ClientSideCollectionAppState';
 import SeriesAppState, { SeriesIndexAppState } from 'App/State/SeriesAppState';
-import { REFRESH_SERIES, RSS_SYNC } from 'Commands/commandNames';
+import { RSS_SYNC } from 'Commands/commandNames';
+import Alert from 'Components/Alert';
 import LoadingIndicator from 'Components/Loading/LoadingIndicator';
 import PageContent from 'Components/Page/PageContent';
 import PageContentBody from 'Components/Page/PageContentBody';
@@ -20,8 +21,9 @@ import PageToolbarSection from 'Components/Page/Toolbar/PageToolbarSection';
 import PageToolbarSeparator from 'Components/Page/Toolbar/PageToolbarSeparator';
 import TableOptionsModalWrapper from 'Components/Table/TableOptions/TableOptionsModalWrapper';
 import withScrollPosition from 'Components/withScrollPosition';
-import { align, icons } from 'Helpers/Props';
-import SortDirection from 'Helpers/Props/SortDirection';
+import { align, icons, kinds } from 'Helpers/Props';
+import { DESCENDING } from 'Helpers/Props/sortDirections';
+import ParseToolbarButton from 'Parse/ParseToolbarButton';
 import NoSeries from 'Series/NoSeries';
 import { executeCommand } from 'Store/Actions/commandActions';
 import { fetchQueueDetails } from 'Store/Actions/queueActions';
@@ -36,6 +38,7 @@ import scrollPositions from 'Store/scrollPositions';
 import createCommandExecutingSelector from 'Store/Selectors/createCommandExecutingSelector';
 import createDimensionsSelector from 'Store/Selectors/createDimensionsSelector';
 import createSeriesClientSideCollectionItemsSelector from 'Store/Selectors/createSeriesClientSideCollectionItemsSelector';
+import translate from 'Utilities/String/translate';
 import SeriesIndexFilterMenu from './Menus/SeriesIndexFilterMenu';
 import SeriesIndexSortMenu from './Menus/SeriesIndexSortMenu';
 import SeriesIndexViewMenu from './Menus/SeriesIndexViewMenu';
@@ -49,6 +52,7 @@ import SeriesIndexSelectFooter from './Select/SeriesIndexSelectFooter';
 import SeriesIndexSelectModeButton from './Select/SeriesIndexSelectModeButton';
 import SeriesIndexSelectModeMenuItem from './Select/SeriesIndexSelectModeMenuItem';
 import SeriesIndexFooter from './SeriesIndexFooter';
+import SeriesIndexRefreshSeriesButton from './SeriesIndexRefreshSeriesButton';
 import SeriesIndexTable from './Table/SeriesIndexTable';
 import SeriesIndexTableOptions from './Table/SeriesIndexTableOptions';
 import styles from './SeriesIndex.css';
@@ -86,9 +90,6 @@ const SeriesIndex = withScrollPosition((props: SeriesIndexProps) => {
   }: SeriesAppState & SeriesIndexAppState & ClientSideCollectionAppState =
     useSelector(createSeriesClientSideCollectionItemsSelector('seriesIndex'));
 
-  const isRefreshingSeries = useSelector(
-    createCommandExecutingSelector(REFRESH_SERIES)
-  );
   const isRssSyncExecuting = useSelector(
     createCommandExecutingSelector(RSS_SYNC)
   );
@@ -104,14 +105,6 @@ const SeriesIndex = withScrollPosition((props: SeriesIndexProps) => {
   useEffect(() => {
     dispatch(fetchSeries());
     dispatch(fetchQueueDetails({ all: true }));
-  }, [dispatch]);
-
-  const onRefreshSeriesPress = useCallback(() => {
-    dispatch(
-      executeCommand({
-        name: REFRESH_SERIES,
-      })
-    );
   }, [dispatch]);
 
   const onRssSyncPress = useCallback(() => {
@@ -208,7 +201,7 @@ const SeriesIndex = withScrollPosition((props: SeriesIndexProps) => {
     const order = Object.keys(characters).sort();
 
     // Reverse if sorting descending
-    if (sortDirection === SortDirection.Descending) {
+    if (sortDirection === DESCENDING) {
       order.reverse();
     }
 
@@ -227,17 +220,13 @@ const SeriesIndex = withScrollPosition((props: SeriesIndexProps) => {
       <PageContent>
         <PageToolbar>
           <PageToolbarSection>
-            <PageToolbarButton
-              label="Update all"
-              iconName={icons.REFRESH}
-              spinningName={icons.REFRESH}
-              isSpinning={isRefreshingSeries}
-              isDisabled={hasNoSeries}
-              onPress={onRefreshSeriesPress}
+            <SeriesIndexRefreshSeriesButton
+              isSelectMode={isSelectMode}
+              selectedFilterKey={selectedFilterKey}
             />
 
             <PageToolbarButton
-              label="RSS Sync"
+              label={translate('RssSync')}
               iconName={icons.RSS}
               isSpinning={isRssSyncExecuting}
               isDisabled={hasNoSeries}
@@ -247,7 +236,11 @@ const SeriesIndex = withScrollPosition((props: SeriesIndexProps) => {
             <PageToolbarSeparator />
 
             <SeriesIndexSelectModeButton
-              label={isSelectMode ? 'Stop Selecting' : 'Select Series'}
+              label={
+                isSelectMode
+                  ? translate('StopSelecting')
+                  : translate('SelectSeries')
+              }
               iconName={isSelectMode ? icons.SERIES_ENDED : icons.CHECK}
               isSelectMode={isSelectMode}
               overflowComponent={SeriesIndexSelectModeMenuItem}
@@ -259,6 +252,9 @@ const SeriesIndex = withScrollPosition((props: SeriesIndexProps) => {
               isSelectMode={isSelectMode}
               overflowComponent={SeriesIndexSelectAllMenuItem}
             />
+
+            <PageToolbarSeparator />
+            <ParseToolbarButton />
           </PageToolbarSection>
 
           <PageToolbarSection
@@ -271,11 +267,14 @@ const SeriesIndex = withScrollPosition((props: SeriesIndexProps) => {
                 optionsComponent={SeriesIndexTableOptions}
                 onTableOptionChange={onTableOptionChange}
               >
-                <PageToolbarButton label="Options" iconName={icons.TABLE} />
+                <PageToolbarButton
+                  label={translate('Options')}
+                  iconName={icons.TABLE}
+                />
               </TableOptionsModalWrapper>
             ) : (
               <PageToolbarButton
-                label="Options"
+                label={translate('Options')}
                 iconName={view === 'posters' ? icons.POSTER : icons.OVERVIEW}
                 isDisabled={hasNoSeries}
                 onPress={onOptionsPress}
@@ -318,7 +317,9 @@ const SeriesIndex = withScrollPosition((props: SeriesIndexProps) => {
           >
             {isFetching && !isPopulated ? <LoadingIndicator /> : null}
 
-            {!isFetching && !!error ? <div>Unable to load series</div> : null}
+            {!isFetching && !!error ? (
+              <Alert kind={kinds.DANGER}>{translate('SeriesLoadError')}</Alert>
+            ) : null}
 
             {isLoaded ? (
               <div className={styles.contentBodyContainer}>

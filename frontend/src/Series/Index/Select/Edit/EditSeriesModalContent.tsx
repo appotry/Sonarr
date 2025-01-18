@@ -14,6 +14,7 @@ import styles from './EditSeriesModalContent.css';
 
 interface SavePayload {
   monitored?: boolean;
+  monitorNewItems?: string;
   qualityProfileId?: number;
   seriesType?: string;
   seasonFolder?: boolean;
@@ -30,21 +31,54 @@ interface EditSeriesModalContentProps {
 const NO_CHANGE = 'noChange';
 
 const monitoredOptions = [
-  { key: NO_CHANGE, value: 'No Change', disabled: true },
-  { key: 'monitored', value: 'Monitored' },
-  { key: 'unmonitored', value: 'Unmonitored' },
+  {
+    key: NO_CHANGE,
+    get value() {
+      return translate('NoChange');
+    },
+    isDisabled: true,
+  },
+  {
+    key: 'monitored',
+    get value() {
+      return translate('Monitored');
+    },
+  },
+  {
+    key: 'unmonitored',
+    get value() {
+      return translate('Unmonitored');
+    },
+  },
 ];
 
 const seasonFolderOptions = [
-  { key: NO_CHANGE, value: 'No Change', disabled: true },
-  { key: 'yes', value: 'Yes' },
-  { key: 'no', value: 'No' },
+  {
+    key: NO_CHANGE,
+    get value() {
+      return translate('NoChange');
+    },
+    isDisabled: true,
+  },
+  {
+    key: 'yes',
+    get value() {
+      return translate('Yes');
+    },
+  },
+  {
+    key: 'no',
+    get value() {
+      return translate('No');
+    },
+  },
 ];
 
 function EditSeriesModalContent(props: EditSeriesModalContentProps) {
   const { seriesIds, onSavePress, onModalClose } = props;
 
   const [monitored, setMonitored] = useState(NO_CHANGE);
+  const [monitorNewItems, setMonitorNewItems] = useState(NO_CHANGE);
   const [qualityProfileId, setQualityProfileId] = useState<string | number>(
     NO_CHANGE
   );
@@ -61,6 +95,11 @@ function EditSeriesModalContent(props: EditSeriesModalContentProps) {
       if (monitored !== NO_CHANGE) {
         hasChanges = true;
         payload.monitored = monitored === 'monitored';
+      }
+
+      if (monitorNewItems !== NO_CHANGE) {
+        hasChanges = true;
+        payload.monitorNewItems = monitorNewItems;
       }
 
       if (qualityProfileId !== NO_CHANGE) {
@@ -92,6 +131,7 @@ function EditSeriesModalContent(props: EditSeriesModalContentProps) {
     },
     [
       monitored,
+      monitorNewItems,
       qualityProfileId,
       seriesType,
       seasonFolder,
@@ -106,6 +146,9 @@ function EditSeriesModalContent(props: EditSeriesModalContentProps) {
       switch (name) {
         case 'monitored':
           setMonitored(value);
+          break;
+        case 'monitorNewItems':
+          setMonitorNewItems(value);
           break;
         case 'qualityProfileId':
           setQualityProfileId(value);
@@ -152,7 +195,7 @@ function EditSeriesModalContent(props: EditSeriesModalContentProps) {
 
   return (
     <ModalContent onModalClose={onModalClose}>
-      <ModalHeader>{translate('Edit Selected Series')}</ModalHeader>
+      <ModalHeader>{translate('EditSelectedSeries')}</ModalHeader>
 
       <ModalBody>
         <FormGroup>
@@ -168,7 +211,20 @@ function EditSeriesModalContent(props: EditSeriesModalContentProps) {
         </FormGroup>
 
         <FormGroup>
-          <FormLabel>{translate('Quality Profile')}</FormLabel>
+          <FormLabel>{translate('MonitorNewItems')}</FormLabel>
+
+          <FormInputGroup
+            type={inputTypes.MONITOR_NEW_ITEMS_SELECT}
+            name="monitorNewItems"
+            value={monitorNewItems}
+            includeNoChange={true}
+            includeNoChangeDisabled={false}
+            onChange={onInputChange}
+          />
+        </FormGroup>
+
+        <FormGroup>
+          <FormLabel>{translate('QualityProfile')}</FormLabel>
 
           <FormInputGroup
             type={inputTypes.QUALITY_PROFILE_SELECT}
@@ -181,7 +237,7 @@ function EditSeriesModalContent(props: EditSeriesModalContentProps) {
         </FormGroup>
 
         <FormGroup>
-          <FormLabel>{translate('Series Type')}</FormLabel>
+          <FormLabel>{translate('SeriesType')}</FormLabel>
 
           <FormInputGroup
             type={inputTypes.SERIES_TYPE_SELECT}
@@ -189,15 +245,13 @@ function EditSeriesModalContent(props: EditSeriesModalContentProps) {
             value={seriesType}
             includeNoChange={true}
             includeNoChangeDisabled={false}
-            helpText={translate(
-              'Series type is used for renaming, parsing and searching'
-            )}
+            helpText={translate('SeriesTypesHelpText')}
             onChange={onInputChange}
           />
         </FormGroup>
 
         <FormGroup>
-          <FormLabel>{translate('Season Folder')}</FormLabel>
+          <FormLabel>{translate('SeasonFolder')}</FormLabel>
 
           <FormInputGroup
             type={inputTypes.SELECT}
@@ -209,7 +263,7 @@ function EditSeriesModalContent(props: EditSeriesModalContentProps) {
         </FormGroup>
 
         <FormGroup>
-          <FormLabel>{translate('Root Folder')}</FormLabel>
+          <FormLabel>{translate('RootFolder')}</FormLabel>
 
           <FormInputGroup
             type={inputTypes.ROOT_FOLDER_SELECT}
@@ -218,9 +272,7 @@ function EditSeriesModalContent(props: EditSeriesModalContentProps) {
             includeNoChange={true}
             includeNoChangeDisabled={false}
             selectedValueOptions={{ includeFreeSpace: false }}
-            helpText={translate(
-              'Moving series to the same root folder can be used to rename series folders to match updated title or naming format'
-            )}
+            helpText={translate('SeriesEditRootFolderHelpText')}
             onChange={onInputChange}
           />
         </FormGroup>
@@ -228,14 +280,14 @@ function EditSeriesModalContent(props: EditSeriesModalContentProps) {
 
       <ModalFooter className={styles.modalFooter}>
         <div className={styles.selected}>
-          {translate('{count} series selected', { count: selectedCount })}
+          {translate('CountSeriesSelected', { count: selectedCount })}
         </div>
 
         <div>
           <Button onPress={onModalClose}>{translate('Cancel')}</Button>
 
           <Button onPress={onSavePressWrapper}>
-            {translate('Apply Changes')}
+            {translate('ApplyChanges')}
           </Button>
         </div>
       </ModalFooter>

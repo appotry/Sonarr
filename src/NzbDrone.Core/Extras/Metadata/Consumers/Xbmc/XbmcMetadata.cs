@@ -24,19 +24,19 @@ namespace NzbDrone.Core.Extras.Metadata.Consumers.Xbmc
     {
         private readonly Logger _logger;
         private readonly IMapCoversToLocal _mediaCoverService;
-        private readonly ITagService _tagService;
+        private readonly ITagRepository _tagRepo;
         private readonly IDetectXbmcNfo _detectNfo;
         private readonly IDiskProvider _diskProvider;
 
         public XbmcMetadata(IDetectXbmcNfo detectNfo,
                             IDiskProvider diskProvider,
                             IMapCoversToLocal mediaCoverService,
-                            ITagService tagService,
+                            ITagRepository tagRepo,
                             Logger logger)
         {
             _logger = logger;
             _mediaCoverService = mediaCoverService;
-            _tagService = tagService;
+            _tagRepo = tagRepo;
             _diskProvider = diskProvider;
             _detectNfo = detectNfo;
         }
@@ -94,13 +94,12 @@ namespace NzbDrone.Core.Extras.Metadata.Consumers.Xbmc
                 metadata.Type = MetadataType.SeasonImage;
 
                 var seasonNumberMatch = seasonMatch.Groups["season"].Value;
-                int seasonNumber;
 
                 if (seasonNumberMatch.Contains("specials"))
                 {
                     metadata.SeasonNumber = 0;
                 }
-                else if (int.TryParse(seasonNumberMatch, out seasonNumber))
+                else if (int.TryParse(seasonNumberMatch, out var seasonNumber))
                 {
                     metadata.SeasonNumber = seasonNumber;
                 }
@@ -138,8 +137,13 @@ namespace NzbDrone.Core.Extras.Metadata.Consumers.Xbmc
             return null;
         }
 
-        public override MetadataFileResult SeriesMetadata(Series series)
+        public override MetadataFileResult SeriesMetadata(Series series, SeriesMetadataReason reason)
         {
+            if (reason == SeriesMetadataReason.EpisodesImported)
+            {
+                return null;
+            }
+
             var xmlResult = string.Empty;
 
             if (Settings.SeriesMetadata)
@@ -177,6 +181,20 @@ namespace NzbDrone.Core.Extras.Metadata.Consumers.Xbmc
                         tvShow.Add(imdbId);
                     }
 
+                    if (series.TmdbId > 0)
+                    {
+                        var tmdbId = new XElement("uniqueid", series.TmdbId);
+                        tmdbId.SetAttributeValue("type", "tmdb");
+                        tvShow.Add(tmdbId);
+                    }
+
+                    if (series.TvMazeId > 0)
+                    {
+                        var tvMazeId = new XElement("uniqueid", series.TvMazeId);
+                        tvMazeId.SetAttributeValue("type", "tvmaze");
+                        tvShow.Add(tvMazeId);
+                    }
+
                     foreach (var genre in series.Genres)
                     {
                         tvShow.Add(new XElement("genre", genre));
@@ -184,7 +202,7 @@ namespace NzbDrone.Core.Extras.Metadata.Consumers.Xbmc
 
                     if (series.Tags.Any())
                     {
-                        var tags = _tagService.GetTags(series.Tags);
+                        var tags = _tagRepo.GetTags(series.Tags);
 
                         foreach (var tag in tags)
                         {
@@ -192,9 +210,17 @@ namespace NzbDrone.Core.Extras.Metadata.Consumers.Xbmc
                         }
                     }
 
+                    tvShow.Add(new XElement("status", series.Status));
+
                     if (series.FirstAired.HasValue)
                     {
                         tvShow.Add(new XElement("premiered", series.FirstAired.Value.ToString("yyyy-MM-dd")));
+                    }
+
+                    // Add support for Jellyfin's "enddate" tag
+                    if (series.Status == SeriesStatusType.Ended && series.LastAired.HasValue)
+                    {
+                        tvShow.Add(new XElement("enddate", series.LastAired.Value.ToString("yyyy-MM-dd")));
                     }
 
                     tvShow.Add(new XElement("studio", series.Network));
@@ -296,7 +322,7 @@ namespace NzbDrone.Core.Extras.Metadata.Consumers.Xbmc
                     {
                         details.Add(new XElement("thumb"));
                     }
-                    else
+                    else if (Settings.EpisodeImageThumb)
                     {
                         details.Add(new XElement("thumb", image.RemoteUrl));
                     }
@@ -395,7 +421,15 @@ namespace NzbDrone.Core.Extras.Metadata.Consumers.Xbmc
 
             try
             {
-                var screenshot = episodeFile.Episodes.Value.First().Images.SingleOrDefault(i => i.CoverType == MediaCoverTypes.Screenshot);
+                var firstEpisode = episodeFile.Episodes.Value.FirstOrDefault();
+
+                if (firstEpisode == null)
+                {
+                    _logger.Debug("Episode file has no associated episodes, potentially a duplicate file");
+                    return new List<ImageFileResult>();
+                }
+
+                var screenshot = firstEpisode.Images.SingleOrDefault(i => i.CoverType == MediaCoverTypes.Screenshot);
 
                 if (screenshot == null)
                 {

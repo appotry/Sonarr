@@ -9,7 +9,7 @@ import VirtualTableHeader from 'Components/Table/VirtualTableHeader';
 import VirtualTableHeaderCell from 'Components/Table/VirtualTableHeaderCell';
 import VirtualTableSelectAllHeaderCell from 'Components/Table/VirtualTableSelectAllHeaderCell';
 import { icons } from 'Helpers/Props';
-import SortDirection from 'Helpers/Props/SortDirection';
+import { SortDirection } from 'Helpers/Props/sortDirections';
 import {
   setSeriesSort,
   setSeriesTableOption,
@@ -110,7 +110,7 @@ function SeriesIndexTableHeader(props: SeriesIndexTableHeaderProps) {
             isSortable={isSortable}
             onSortPress={onSortPress}
           >
-            {label}
+            {typeof label === 'function' ? label() : label}
           </VirtualTableHeaderCell>
         );
       })}

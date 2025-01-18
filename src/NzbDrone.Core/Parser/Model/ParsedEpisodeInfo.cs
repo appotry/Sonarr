@@ -23,6 +23,8 @@ namespace NzbDrone.Core.Parser.Model
         public bool IsPartialSeason { get; set; }
         public bool IsMultiSeason { get; set; }
         public bool IsSeasonExtra { get; set; }
+        public bool IsSplitEpisode { get; set; }
+        public bool IsMiniSeries { get; set; }
         public bool Special { get; set; }
         public string ReleaseGroup { get; set; }
         public string ReleaseHash { get; set; }
@@ -89,9 +91,32 @@ namespace NzbDrone.Core.Parser.Model
             }
         }
 
+        public ReleaseType ReleaseType
+        {
+            get
+            {
+                if (EpisodeNumbers.Length > 1 || AbsoluteEpisodeNumbers.Length > 1)
+                {
+                    return Model.ReleaseType.MultiEpisode;
+                }
+
+                if (EpisodeNumbers.Length == 1 || AbsoluteEpisodeNumbers.Length == 1)
+                {
+                    return Model.ReleaseType.SingleEpisode;
+                }
+
+                if (FullSeason)
+                {
+                    return Model.ReleaseType.SeasonPack;
+                }
+
+                return Model.ReleaseType.Unknown;
+            }
+        }
+
         public override string ToString()
         {
-            string episodeString = "[Unknown Episode]";
+            var episodeString = "[Unknown Episode]";
 
             if (IsDaily && EpisodeNumbers.Empty())
             {

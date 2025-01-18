@@ -1,3 +1,4 @@
+import classNames from 'classnames';
 import React, { useCallback, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { REFRESH_SERIES, SERIES_SEARCH } from 'Commands/commandNames';
@@ -5,16 +6,19 @@ import Label from 'Components/Label';
 import IconButton from 'Components/Link/IconButton';
 import Link from 'Components/Link/Link';
 import SpinnerIconButton from 'Components/Link/SpinnerIconButton';
+import TagListConnector from 'Components/TagListConnector';
 import { icons } from 'Helpers/Props';
 import DeleteSeriesModal from 'Series/Delete/DeleteSeriesModal';
-import EditSeriesModalConnector from 'Series/Edit/EditSeriesModalConnector';
+import EditSeriesModal from 'Series/Edit/EditSeriesModal';
 import SeriesIndexProgressBar from 'Series/Index/ProgressBar/SeriesIndexProgressBar';
 import SeriesIndexPosterSelect from 'Series/Index/Select/SeriesIndexPosterSelect';
 import { Statistics } from 'Series/Series';
 import SeriesPoster from 'Series/SeriesPoster';
 import { executeCommand } from 'Store/Actions/commandActions';
 import createUISettingsSelector from 'Store/Selectors/createUISettingsSelector';
+import formatDateTime from 'Utilities/Date/formatDateTime';
 import getRelativeDate from 'Utilities/Date/getRelativeDate';
+import translate from 'Utilities/String/translate';
 import createSeriesIndexItemSelector from '../createSeriesIndexItemSelector';
 import selectPosterOptions from './selectPosterOptions';
 import SeriesIndexPosterInfo from './SeriesIndexPosterInfo';
@@ -39,12 +43,12 @@ function SeriesIndexPoster(props: SeriesIndexPosterProps) {
     showTitle,
     showMonitored,
     showQualityProfile,
+    showTags,
     showSearchAction,
   } = useSelector(selectPosterOptions);
 
-  const { showRelativeDates, shortDateFormat, timeFormat } = useSelector(
-    createUISettingsSelector()
-  );
+  const { showRelativeDates, shortDateFormat, longDateFormat, timeFormat } =
+    useSelector(createUISettingsSelector());
 
   const {
     title,
@@ -52,17 +56,22 @@ function SeriesIndexPoster(props: SeriesIndexPosterProps) {
     status,
     path,
     titleSlug,
+    originalLanguage,
+    network,
     nextAiring,
+    previousAiring,
+    added,
     statistics = {} as Statistics,
     images,
+    tags,
   } = series;
 
   const {
-    seasonCount,
-    episodeCount,
-    episodeFileCount,
-    totalEpisodeCount,
-    sizeOnDisk,
+    seasonCount = 0,
+    episodeCount = 0,
+    episodeFileCount = 0,
+    totalEpisodeCount = 0,
+    sizeOnDisk = 0,
   } = statistics;
 
   const dispatch = useDispatch();
@@ -122,14 +131,14 @@ function SeriesIndexPoster(props: SeriesIndexPosterProps) {
 
   return (
     <div className={styles.content}>
-      <div className={styles.posterContainer}>
+      <div className={styles.posterContainer} title={title}>
         {isSelectMode ? <SeriesIndexPosterSelect seriesId={seriesId} /> : null}
 
         <Label className={styles.controls}>
           <SpinnerIconButton
             className={styles.action}
             name={icons.REFRESH}
-            title="Refresh series"
+            title={translate('RefreshSeries')}
             isSpinning={isRefreshingSeries}
             onPress={onRefreshPress}
           />
@@ -138,7 +147,7 @@ function SeriesIndexPoster(props: SeriesIndexPosterProps) {
             <SpinnerIconButton
               className={styles.action}
               name={icons.SEARCH}
-              title="Search for monitored episodes"
+              title={translate('SearchForMonitoredEpisodes')}
               isSpinning={isSearchingSeries}
               onPress={onSearchPress}
             />
@@ -147,13 +156,23 @@ function SeriesIndexPoster(props: SeriesIndexPosterProps) {
           <IconButton
             className={styles.action}
             name={icons.EDIT}
-            title="Edit Series"
+            title={translate('EditSeries')}
             onPress={onEditSeriesPress}
           />
         </Label>
 
         {status === 'ended' ? (
-          <div className={styles.ended} title="Ended" />
+          <div
+            className={classNames(styles.status, styles.ended)}
+            title={translate('Ended')}
+          />
+        ) : null}
+
+        {status === 'deleted' ? (
+          <div
+            className={classNames(styles.status, styles.deleted)}
+            title={translate('Deleted')}
+          />
         ) : null}
 
         <Link className={styles.link} style={elementStyle} to={link}>
@@ -185,28 +204,56 @@ function SeriesIndexPoster(props: SeriesIndexPosterProps) {
         isStandalone={false}
       />
 
-      {showTitle ? <div className={styles.title}>{title}</div> : null}
-
-      {showMonitored ? (
-        <div className={styles.title}>
-          {monitored ? 'Monitored' : 'Unmonitored'}
+      {showTitle ? (
+        <div className={styles.title} title={title}>
+          {title}
         </div>
       ) : null}
 
-      {showQualityProfile ? (
-        <div className={styles.title}>{qualityProfile.name}</div>
+      {showMonitored ? (
+        <div className={styles.title}>
+          {monitored ? translate('Monitored') : translate('Unmonitored')}
+        </div>
+      ) : null}
+
+      {showQualityProfile && !!qualityProfile?.name ? (
+        <div className={styles.title} title={translate('QualityProfile')}>
+          {qualityProfile.name}
+        </div>
       ) : null}
 
       {nextAiring ? (
-        <div className={styles.nextAiring}>
-          {getRelativeDate(nextAiring, shortDateFormat, showRelativeDates, {
+        <div
+          className={styles.nextAiring}
+          title={`${translate('NextAiring')}: ${formatDateTime(
+            nextAiring,
+            longDateFormat,
+            timeFormat
+          )}`}
+        >
+          {getRelativeDate({
+            date: nextAiring,
+            shortDateFormat,
+            showRelativeDates,
             timeFormat,
             timeForToday: true,
           })}
         </div>
       ) : null}
 
+      {showTags && tags.length ? (
+        <div className={styles.tags}>
+          <div className={styles.tagsList}>
+            <TagListConnector tags={tags} />
+          </div>
+        </div>
+      ) : null}
+
       <SeriesIndexPosterInfo
+        originalLanguage={originalLanguage}
+        network={network}
+        previousAiring={previousAiring}
+        added={added}
         seasonCount={seasonCount}
         sizeOnDisk={sizeOnDisk}
         path={path}
@@ -215,10 +262,13 @@ function SeriesIndexPoster(props: SeriesIndexPosterProps) {
         showRelativeDates={showRelativeDates}
         sortKey={sortKey}
         shortDateFormat={shortDateFormat}
+        longDateFormat={longDateFormat}
         timeFormat={timeFormat}
+        tags={tags}
+        showTags={showTags}
       />
 
-      <EditSeriesModalConnector
+      <EditSeriesModal
         isOpen={isEditSeriesModalOpen}
         seriesId={seriesId}
         onModalClose={onEditSeriesModalClose}

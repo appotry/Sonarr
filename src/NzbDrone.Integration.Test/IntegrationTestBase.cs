@@ -49,7 +49,7 @@ namespace NzbDrone.Integration.Test
         public LogsClient Logs;
         public ClientBase<NamingConfigResource> NamingConfig;
         public NotificationClient Notifications;
-        public ClientBase<QualityProfileResource> Profiles;
+        public ClientBase<QualityProfileResource> QualityProfiles;
         public ReleaseClient Releases;
         public ReleasePushClient ReleasePush;
         public ClientBase<RootFolderResource> RootFolders;
@@ -57,6 +57,7 @@ namespace NzbDrone.Integration.Test
         public ClientBase<TagResource> Tags;
         public ClientBase<EpisodeResource> WantedMissing;
         public ClientBase<EpisodeResource> WantedCutoffUnmet;
+        public QueueClient Queue;
 
         private List<SignalRMessage> _signalRReceived;
 
@@ -113,7 +114,7 @@ namespace NzbDrone.Integration.Test
             Logs = new LogsClient(RestClient, ApiKey);
             NamingConfig = new ClientBase<NamingConfigResource>(RestClient, ApiKey, "config/naming");
             Notifications = new NotificationClient(RestClient, ApiKey);
-            Profiles = new ClientBase<QualityProfileResource>(RestClient, ApiKey);
+            QualityProfiles = new ClientBase<QualityProfileResource>(RestClient, ApiKey);
             Releases = new ReleaseClient(RestClient, ApiKey);
             ReleasePush = new ReleasePushClient(RestClient, ApiKey);
             RootFolders = new ClientBase<RootFolderResource>(RestClient, ApiKey);
@@ -121,6 +122,7 @@ namespace NzbDrone.Integration.Test
             Tags = new ClientBase<TagResource>(RestClient, ApiKey);
             WantedMissing = new ClientBase<EpisodeResource>(RestClient, ApiKey, "wanted/missing");
             WantedCutoffUnmet = new ClientBase<EpisodeResource>(RestClient, ApiKey, "wanted/cutoff");
+            Queue = new QueueClient(RestClient, ApiKey);
         }
 
         [OneTimeTearDown]
@@ -305,7 +307,7 @@ namespace NzbDrone.Integration.Test
                 Directory.CreateDirectory(Path.GetDirectoryName(path));
                 File.WriteAllText(path, "Fake Episode");
 
-                Commands.PostAndWait(new RefreshSeriesCommand(series.Id));
+                Commands.PostAndWait(new RefreshSeriesCommand(new List<int> { series.Id }));
 
                 Commands.WaitAll();
 
@@ -317,10 +319,10 @@ namespace NzbDrone.Integration.Test
             return result.EpisodeFile;
         }
 
-        public QualityProfileResource EnsureProfileCutoff(int profileId, Quality cutoff, bool upgradeAllowed)
+        public QualityProfileResource EnsureQualityProfileCutoff(int profileId, Quality cutoff, bool upgradeAllowed)
         {
             var needsUpdate = false;
-            var profile = Profiles.Get(profileId);
+            var profile = QualityProfiles.Get(profileId);
 
             if (profile.Cutoff != cutoff.Id)
             {
@@ -336,7 +338,7 @@ namespace NzbDrone.Integration.Test
 
             if (needsUpdate)
             {
-                profile = Profiles.Put(profile);
+                profile = QualityProfiles.Put(profile);
             }
 
             return profile;

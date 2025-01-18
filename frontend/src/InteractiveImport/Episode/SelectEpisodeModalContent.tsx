@@ -15,16 +15,17 @@ import TableBody from 'Components/Table/TableBody';
 import Episode from 'Episode/Episode';
 import useSelectState from 'Helpers/Hooks/useSelectState';
 import { kinds, scrollDirections } from 'Helpers/Props';
-import SortDirection from 'Helpers/Props/SortDirection';
+import { SortDirection } from 'Helpers/Props/sortDirections';
 import {
   clearEpisodes,
   fetchEpisodes,
   setEpisodesSort,
 } from 'Store/Actions/episodeSelectionActions';
 import createClientSideCollectionSelector from 'Store/Selectors/createClientSideCollectionSelector';
-import { CheckInputChanged } from 'typings/inputs';
+import { CheckInputChanged, InputChanged } from 'typings/inputs';
 import { SelectStateInputProps } from 'typings/props';
 import getErrorMessage from 'Utilities/Object/getErrorMessage';
+import translate from 'Utilities/String/translate';
 import getSelectedIds from 'Utilities/Table/getSelectedIds';
 import SelectEpisodeRow from './SelectEpisodeRow';
 import styles from './SelectEpisodeModalContent.css';
@@ -38,12 +39,12 @@ const columns = [
   },
   {
     name: 'title',
-    label: 'Title',
+    label: () => translate('Title'),
     isVisible: true,
   },
   {
     name: 'airDate',
-    label: 'Air Date',
+    label: () => translate('AirDate'),
     isVisible: true,
   },
 ];
@@ -68,15 +69,10 @@ interface SelectEpisodeModalContentProps {
   seasonNumber?: number;
   selectedDetails?: string;
   isAnime: boolean;
-  sortKey?: string;
-  sortDirection?: string;
-  modalTitle?: string;
+  modalTitle: string;
   onEpisodesSelect(selectedEpisodes: SelectedEpisode[]): unknown;
   onModalClose(): unknown;
 }
-
-//
-// Render
 
 function SelectEpisodeModalContent(props: SelectEpisodeModalContentProps) {
   const {
@@ -85,8 +81,6 @@ function SelectEpisodeModalContent(props: SelectEpisodeModalContentProps) {
     seasonNumber,
     selectedDetails,
     isAnime,
-    sortKey,
-    sortDirection,
     modalTitle,
     onEpisodesSelect,
     onModalClose,
@@ -96,20 +90,19 @@ function SelectEpisodeModalContent(props: SelectEpisodeModalContentProps) {
   const [selectState, setSelectState] = useSelectState();
 
   const { allSelected, allUnselected, selectedState } = selectState;
-  const { isFetching, isPopulated, items, error } = useSelector(
-    episodesSelector()
-  );
+  const { isFetching, isPopulated, items, error, sortKey, sortDirection } =
+    useSelector(episodesSelector());
   const dispatch = useDispatch();
 
   const filterEpisodeNumber = parseInt(filter);
-  const errorMessage = getErrorMessage(error, 'Unable to load episodes');
+  const errorMessage = getErrorMessage(error, translate('EpisodesLoadError'));
   const selectedCount = selectedIds.length;
   const selectedEpisodesCount = getSelectedIds(selectedState).length;
   const selectionIsValid =
     selectedEpisodesCount > 0 && selectedEpisodesCount % selectedCount === 0;
 
   const onFilterChange = useCallback(
-    ({ value }: { value: string }) => {
+    ({ value }: InputChanged<string>) => {
       setFilter(value.toLowerCase());
     },
     [setFilter]
@@ -196,13 +189,15 @@ function SelectEpisodeModalContent(props: SelectEpisodeModalContentProps) {
   if (!details) {
     details =
       selectedCount > 1
-        ? `${selectedCount} selected files`
-        : `${selectedCount} selected file`;
+        ? translate('CountSelectedFiles', { selectedCount })
+        : translate('CountSelectedFile', { selectedCount });
   }
 
   return (
     <ModalContent onModalClose={onModalClose}>
-      <ModalHeader>{modalTitle} - Select Episode(s)</ModalHeader>
+      <ModalHeader>
+        {translate('SelectEpisodesModalTitle', { modalTitle })}
+      </ModalHeader>
 
       <ModalBody
         className={styles.modalBody}
@@ -210,7 +205,7 @@ function SelectEpisodeModalContent(props: SelectEpisodeModalContentProps) {
       >
         <TextInput
           className={styles.filterInput}
-          placeholder="Filter episodes by title or number"
+          placeholder={translate('FilterEpisodesPlaceholder')}
           name="filter"
           value={filter}
           autoFocus={true}
@@ -255,7 +250,7 @@ function SelectEpisodeModalContent(props: SelectEpisodeModalContentProps) {
           ) : null}
 
           {isPopulated && !items.length
-            ? 'No episodes were found for the selected season'
+            ? translate('NoEpisodesFoundForSelectedSeason')
             : null}
         </Scroller>
       </ModalBody>
@@ -264,14 +259,14 @@ function SelectEpisodeModalContent(props: SelectEpisodeModalContentProps) {
         <div className={styles.details}>{details}</div>
 
         <div className={styles.buttons}>
-          <Button onPress={onModalClose}>Cancel</Button>
+          <Button onPress={onModalClose}>{translate('Cancel')}</Button>
 
           <Button
             kind={kinds.SUCCESS}
             isDisabled={!selectionIsValid}
             onPress={onEpisodesSelectWrapper}
           >
-            Select Episodes
+            {translate('SelectEpisodes')}
           </Button>
         </div>
       </ModalFooter>

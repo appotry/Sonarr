@@ -2,17 +2,20 @@ using System;
 using System.Collections.Generic;
 using FluentValidation.Results;
 using NLog;
+using NzbDrone.Core.Localization;
 
 namespace NzbDrone.Core.Notifications.Mailgun
 {
     public class MailGun : NotificationBase<MailgunSettings>
     {
         private readonly IMailgunProxy _proxy;
+        private readonly ILocalizationService _localizationService;
         private readonly Logger _logger;
 
-        public MailGun(IMailgunProxy proxy, Logger logger)
+        public MailGun(IMailgunProxy proxy, ILocalizationService localizationService, Logger logger)
         {
             _proxy = proxy;
+            _localizationService = localizationService;
             _logger = logger;
         }
 
@@ -27,6 +30,11 @@ namespace NzbDrone.Core.Notifications.Mailgun
         public override void OnDownload(DownloadMessage downloadMessage)
         {
             _proxy.SendNotification(EPISODE_DOWNLOADED_TITLE, downloadMessage.Message, Settings);
+        }
+
+        public override void OnImportComplete(ImportCompleteMessage message)
+        {
+            _proxy.SendNotification(IMPORT_COMPLETE_TITLE, message.Message, Settings);
         }
 
         public override void OnEpisodeFileDelete(EpisodeDeleteMessage deleteMessage)
@@ -85,7 +93,7 @@ namespace NzbDrone.Core.Notifications.Mailgun
             catch (Exception ex)
             {
                 _logger.Error(ex, "Unable to send test message though Mailgun.");
-                failures.Add(new ValidationFailure("", "Unable to send test message though Mailgun."));
+                failures.Add(new ValidationFailure(string.Empty, _localizationService.GetLocalizedString("NotificationsValidationUnableToSendTestMessage", new Dictionary<string, object> { { "exceptionMessage", ex.Message } })));
             }
 
             return new ValidationResult(failures);

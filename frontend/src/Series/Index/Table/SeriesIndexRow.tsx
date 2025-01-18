@@ -8,14 +8,14 @@ import HeartRating from 'Components/HeartRating';
 import IconButton from 'Components/Link/IconButton';
 import Link from 'Components/Link/Link';
 import SpinnerIconButton from 'Components/Link/SpinnerIconButton';
-import RelativeDateCellConnector from 'Components/Table/Cells/RelativeDateCellConnector';
+import RelativeDateCell from 'Components/Table/Cells/RelativeDateCell';
 import VirtualTableRowCell from 'Components/Table/Cells/VirtualTableRowCell';
 import VirtualTableSelectCell from 'Components/Table/Cells/VirtualTableSelectCell';
 import Column from 'Components/Table/Column';
 import TagListConnector from 'Components/TagListConnector';
 import { icons } from 'Helpers/Props';
 import DeleteSeriesModal from 'Series/Delete/DeleteSeriesModal';
-import EditSeriesModalConnector from 'Series/Edit/EditSeriesModalConnector';
+import EditSeriesModal from 'Series/Edit/EditSeriesModal';
 import createSeriesIndexItemSelector from 'Series/Index/createSeriesIndexItemSelector';
 import { Statistics } from 'Series/Series';
 import SeriesBanner from 'Series/SeriesBanner';
@@ -24,6 +24,7 @@ import { executeCommand } from 'Store/Actions/commandActions';
 import { SelectStateInputProps } from 'typings/props';
 import formatBytes from 'Utilities/Number/formatBytes';
 import titleCase from 'Utilities/String/titleCase';
+import translate from 'Utilities/String/translate';
 import SeriesIndexProgressBar from '../ProgressBar/SeriesIndexProgressBar';
 import hasGrowableColumns from './hasGrowableColumns';
 import SeasonsCell from './SeasonsCell';
@@ -54,6 +55,7 @@ function SeriesIndexRow(props: SeriesIndexRowProps) {
   const {
     title,
     monitored,
+    monitorNewItems,
     status,
     path,
     titleSlug,
@@ -242,7 +244,7 @@ function SeriesIndexRow(props: SeriesIndexRowProps) {
         if (name === 'qualityProfileId') {
           return (
             <VirtualTableRowCell key={name} className={styles[name]}>
-              {qualityProfile.name}
+              {qualityProfile?.name ?? ''}
             </VirtualTableRowCell>
           );
         }
@@ -251,7 +253,7 @@ function SeriesIndexRow(props: SeriesIndexRowProps) {
           return (
             // eslint-disable-next-line @typescript-eslint/ban-ts-comment
             // @ts-ignore ts(2739)
-            <RelativeDateCellConnector
+            <RelativeDateCell
               key={name}
               className={styles[name]}
               date={nextAiring}
@@ -264,7 +266,7 @@ function SeriesIndexRow(props: SeriesIndexRowProps) {
           return (
             // eslint-disable-next-line @typescript-eslint/ban-ts-comment
             // @ts-ignore ts(2739)
-            <RelativeDateCellConnector
+            <RelativeDateCell
               key={name}
               className={styles[name]}
               date={previousAiring}
@@ -277,7 +279,7 @@ function SeriesIndexRow(props: SeriesIndexRowProps) {
           return (
             // eslint-disable-next-line @typescript-eslint/ban-ts-comment
             // @ts-ignore ts(2739)
-            <RelativeDateCellConnector
+            <RelativeDateCell
               key={name}
               className={styles[name]}
               date={added}
@@ -400,7 +402,7 @@ function SeriesIndexRow(props: SeriesIndexRowProps) {
         if (name === 'ratings') {
           return (
             <VirtualTableRowCell key={name} className={styles[name]}>
-              <HeartRating rating={ratings.value} />
+              <HeartRating rating={ratings.value} votes={ratings.votes} />
             </VirtualTableRowCell>
           );
         }
@@ -449,12 +451,22 @@ function SeriesIndexRow(props: SeriesIndexRowProps) {
           );
         }
 
+        if (name === 'monitorNewItems') {
+          return (
+            <VirtualTableRowCell key={name} className={styles[name]}>
+              {monitorNewItems === 'all'
+                ? translate('SeasonsMonitoredAll')
+                : translate('SeasonsMonitoredNone')}
+            </VirtualTableRowCell>
+          );
+        }
+
         if (name === 'actions') {
           return (
             <VirtualTableRowCell key={name} className={styles[name]}>
               <SpinnerIconButton
                 name={icons.REFRESH}
-                title="Refresh series"
+                title={translate('RefreshSeries')}
                 isSpinning={isRefreshingSeries}
                 onPress={onRefreshPress}
               />
@@ -462,7 +474,7 @@ function SeriesIndexRow(props: SeriesIndexRowProps) {
               {showSearchAction ? (
                 <SpinnerIconButton
                   name={icons.SEARCH}
-                  title="Search for monitored episodes"
+                  title={translate('SearchForMonitoredEpisodes')}
                   isSpinning={isSearchingSeries}
                   onPress={onSearchPress}
                 />
@@ -470,7 +482,7 @@ function SeriesIndexRow(props: SeriesIndexRowProps) {
 
               <IconButton
                 name={icons.EDIT}
-                title="Edit Series"
+                title={translate('EditSeries')}
                 onPress={onEditSeriesPress}
               />
             </VirtualTableRowCell>
@@ -480,7 +492,7 @@ function SeriesIndexRow(props: SeriesIndexRowProps) {
         return null;
       })}
 
-      <EditSeriesModalConnector
+      <EditSeriesModal
         isOpen={isEditSeriesModalOpen}
         seriesId={seriesId}
         onModalClose={onEditSeriesModalClose}

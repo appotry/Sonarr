@@ -26,6 +26,7 @@ module.exports = (env) => {
   const config = {
     mode: isProduction ? 'production' : 'development',
     devtool: isProduction ? 'source-map' : 'eval-source-map',
+    target: 'web',
 
     stats: {
       children: false
@@ -36,7 +37,7 @@ module.exports = (env) => {
     },
 
     entry: {
-      index: 'index.js'
+      index: 'index.ts'
     },
 
     resolve: {
@@ -51,8 +52,7 @@ module.exports = (env) => {
         'node_modules'
       ],
       alias: {
-        jquery: 'jquery/dist/jquery.min',
-        'react-middle-truncate': 'react-middle-truncate/lib/react-middle-truncate'
+        jquery: 'jquery/dist/jquery.min'
       },
       fallback: {
         buffer: false,
@@ -67,21 +67,21 @@ module.exports = (env) => {
     output: {
       path: distFolder,
       publicPath: '/',
-      filename: '[name].js',
+      filename: isProduction ? '[name]-[contenthash].js' : '[name].js',
       sourceMapFilename: '[file].map'
     },
 
     optimization: {
       moduleIds: 'deterministic',
-      chunkIds: 'named',
-      splitChunks: {
-        chunks: 'initial',
-        name: 'vendors'
-      }
+      chunkIds: isProduction ? 'deterministic' : 'named'
     },
 
     performance: {
       hints: false
+    },
+
+    experiments: {
+      topLevelAwait: true
     },
 
     plugins: [
@@ -91,13 +91,15 @@ module.exports = (env) => {
       }),
 
       new MiniCssExtractPlugin({
-        filename: 'Content/styles.css'
+        filename: 'Content/styles.css',
+        chunkFilename: isProduction ? 'Content/[id]-[chunkhash].css' : 'Content/[id].css'
       }),
 
       new HtmlWebpackPlugin({
         template: 'frontend/src/index.ejs',
         filename: 'index.html',
-        publicPath: '/'
+        publicPath: '/',
+        inject: false
       }),
 
       new FileManagerPlugin({
@@ -132,6 +134,12 @@ module.exports = (env) => {
               {
                 source: 'frontend/src/Content/robots.txt',
                 destination: path.join(distFolder, 'Content/robots.txt')
+              },
+
+              // manifest.json and browserconfig.xml
+              {
+                source: 'frontend/src/Content/*.(json|xml)',
+                destination: path.join(distFolder, 'Content')
               }
             ]
           }
@@ -179,7 +187,7 @@ module.exports = (env) => {
                       loose: true,
                       debug: false,
                       useBuiltIns: 'entry',
-                      corejs: 3
+                      corejs: '3.39'
                     }
                   ]
                 ]
@@ -200,7 +208,7 @@ module.exports = (env) => {
               options: {
                 importLoaders: 1,
                 modules: {
-                  localIdentName: '[name]/[local]/[hash:base64:5]'
+                  localIdentName: isProduction ? '[name]/[local]/[hash:base64:5]' : '[name]/[local]'
                 }
               }
             },

@@ -1,4 +1,5 @@
-﻿using FluentValidation.Validators;
+using FluentValidation.Validators;
+using NzbDrone.Common.Disk;
 using NzbDrone.Common.Extensions;
 using NzbDrone.Core.RootFolders;
 
@@ -13,7 +14,7 @@ namespace NzbDrone.Core.Validation.Paths
             _rootFolderService = rootFolderService;
         }
 
-        protected override string GetDefaultMessageTemplate() => "Path is already configured as a root folder";
+        protected override string GetDefaultMessageTemplate() => "Path '{path}' is already configured as a root folder";
 
         protected override bool IsValid(PropertyValidatorContext context)
         {
@@ -22,7 +23,9 @@ namespace NzbDrone.Core.Validation.Paths
                 return true;
             }
 
-            return !_rootFolderService.All().Exists(r => r.Path.PathEquals(context.PropertyValue.ToString()));
+            context.MessageFormatter.AppendArgument("path", context.PropertyValue.ToString());
+
+            return !_rootFolderService.All().Exists(r => r.Path.IsPathValid(PathValidationType.CurrentOs) && r.Path.PathEquals(context.PropertyValue.ToString()));
         }
     }
 }

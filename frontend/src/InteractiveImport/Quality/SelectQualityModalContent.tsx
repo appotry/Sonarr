@@ -1,8 +1,8 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { createSelector } from 'reselect';
-import { Error } from 'App/State/AppSectionState';
 import AppState from 'App/State/AppState';
+import Alert from 'Components/Alert';
 import Form from 'Components/Form/Form';
 import FormGroup from 'Components/Form/FormGroup';
 import FormInputGroup from 'Components/Form/FormInputGroup';
@@ -18,22 +18,16 @@ import Quality, { QualityModel } from 'Quality/Quality';
 import { fetchQualityProfileSchema } from 'Store/Actions/settingsActions';
 import { CheckInputChanged } from 'typings/inputs';
 import getQualities from 'Utilities/Quality/getQualities';
-
-interface QualitySchemaState {
-  isFetching: boolean;
-  isPopulated: boolean;
-  error: Error;
-  items: Quality[];
-}
+import translate from 'Utilities/String/translate';
 
 function createQualitySchemaSelector() {
   return createSelector(
     (state: AppState) => state.settings.qualityProfiles,
-    (qualityProfiles): QualitySchemaState => {
+    (qualityProfiles) => {
       const { isSchemaFetching, isSchemaPopulated, schemaError, schema } =
         qualityProfiles;
 
-      const items = getQualities(schema.items) as Quality[];
+      const items = getQualities(schema.items);
 
       return {
         isFetching: isSchemaFetching,
@@ -126,12 +120,14 @@ function SelectQualityModalContent(props: SelectQualityModalContentProps) {
       <ModalBody>
         {isFetching && <LoadingIndicator />}
 
-        {!isFetching && error ? <div>Unable to load qualities</div> : null}
+        {!isFetching && error ? (
+          <Alert kind={kinds.DANGER}>{translate('QualitiesLoadError')}</Alert>
+        ) : null}
 
         {isPopulated && !error ? (
           <Form>
             <FormGroup>
-              <FormLabel>Quality</FormLabel>
+              <FormLabel>{translate('Quality')}</FormLabel>
 
               <FormInputGroup
                 type={inputTypes.SELECT}
@@ -143,7 +139,7 @@ function SelectQualityModalContent(props: SelectQualityModalContentProps) {
             </FormGroup>
 
             <FormGroup>
-              <FormLabel>Proper</FormLabel>
+              <FormLabel>{translate('Proper')}</FormLabel>
 
               <FormInputGroup
                 type={inputTypes.CHECK}
@@ -154,7 +150,7 @@ function SelectQualityModalContent(props: SelectQualityModalContentProps) {
             </FormGroup>
 
             <FormGroup>
-              <FormLabel>Real</FormLabel>
+              <FormLabel>{translate('Real')}</FormLabel>
 
               <FormInputGroup
                 type={inputTypes.CHECK}
@@ -171,7 +167,7 @@ function SelectQualityModalContent(props: SelectQualityModalContentProps) {
         <Button onPress={onModalClose}>Cancel</Button>
 
         <Button kind={kinds.SUCCESS} onPress={onQualitySelectWrapper}>
-          Select Quality
+          {translate('SelectQuality')}
         </Button>
       </ModalFooter>
     </ModalContent>

@@ -2,7 +2,7 @@
   "openapi": "3.0.1",
   "info": {
     "title": "Sonarr",
-    "description": "Sonarr API docs",
+    "description": "Sonarr API docs - The v3 API docs apply to both v3 and v4 versions of Sonarr. Some functionality may only be available in v4 of the Sonarr application.",
     "license": {
       "name": "GPL-3.0",
       "url": "https://github.com/Sonarr/Sonarr/blob/develop/LICENSE"
@@ -34,7 +34,7 @@
         ],
         "responses": {
           "200": {
-            "description": "Success"
+            "description": "OK"
           }
         }
       }
@@ -59,25 +59,25 @@
               "schema": {
                 "type": "object",
                 "properties": {
-                  "Username": {
+                  "username": {
                     "type": "string"
                   },
-                  "Password": {
+                  "password": {
                     "type": "string"
                   },
-                  "RememberMe": {
+                  "rememberMe": {
                     "type": "string"
                   }
                 }
               },
               "encoding": {
-                "Username": {
+                "username": {
                   "style": "form"
                 },
-                "Password": {
+                "password": {
                   "style": "form"
                 },
-                "RememberMe": {
+                "rememberMe": {
                   "style": "form"
                 }
               }
@@ -86,7 +86,7 @@
         },
         "responses": {
           "200": {
-            "description": "Success"
+            "description": "OK"
           }
         }
       },
@@ -96,7 +96,7 @@
         ],
         "responses": {
           "200": {
-            "description": "Success"
+            "description": "OK"
           }
         }
       }
@@ -108,7 +108,7 @@
         ],
         "responses": {
           "200": {
-            "description": "Success"
+            "description": "OK"
           }
         }
       }
@@ -129,7 +129,7 @@
         },
         "responses": {
           "200": {
-            "description": "Success",
+            "description": "OK",
             "content": {
               "text/plain": {
                 "schema": {
@@ -156,7 +156,7 @@
         ],
         "responses": {
           "200": {
-            "description": "Success",
+            "description": "OK",
             "content": {
               "application/json": {
                 "schema": {
@@ -197,7 +197,7 @@
         },
         "responses": {
           "200": {
-            "description": "Success",
+            "description": "OK",
             "content": {
               "text/plain": {
                 "schema": {
@@ -235,7 +235,7 @@
         ],
         "responses": {
           "200": {
-            "description": "Success"
+            "description": "OK"
           }
         }
       },
@@ -256,7 +256,7 @@
         ],
         "responses": {
           "200": {
-            "description": "Success",
+            "description": "OK",
             "content": {
               "application/json": {
                 "schema": {
@@ -275,7 +275,7 @@
         ],
         "responses": {
           "200": {
-            "description": "Success"
+            "description": "OK"
           }
         }
       }
@@ -287,7 +287,7 @@
         ],
         "responses": {
           "200": {
-            "description": "Success",
+            "description": "OK",
             "content": {
               "text/plain": {
                 "schema": {
@@ -336,7 +336,7 @@
         ],
         "responses": {
           "200": {
-            "description": "Success"
+            "description": "OK"
           }
         }
       }
@@ -359,7 +359,7 @@
         ],
         "responses": {
           "200": {
-            "description": "Success"
+            "description": "OK"
           }
         }
       }
@@ -371,7 +371,7 @@
         ],
         "responses": {
           "200": {
-            "description": "Success"
+            "description": "OK"
           }
         }
       }
@@ -381,9 +381,64 @@
         "tags": [
           "Blocklist"
         ],
+        "parameters": [
+          {
+            "name": "page",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "default": 1
+            }
+          },
+          {
+            "name": "pageSize",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "default": 10
+            }
+          },
+          {
+            "name": "sortKey",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "sortDirection",
+            "in": "query",
+            "schema": {
+              "$ref": "#/components/schemas/SortDirection"
+            }
+          },
+          {
+            "name": "seriesIds",
+            "in": "query",
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "integer",
+                "format": "int32"
+              }
+            }
+          },
+          {
+            "name": "protocols",
+            "in": "query",
+            "schema": {
+              "type": "array",
+              "items": {
+                "$ref": "#/components/schemas/DownloadProtocol"
+              }
+            }
+          }
+        ],
         "responses": {
           "200": {
-            "description": "Success",
+            "description": "OK",
             "content": {
               "application/json": {
                 "schema": {
@@ -413,7 +468,7 @@
         ],
         "responses": {
           "200": {
-            "description": "Success"
+            "description": "OK"
           }
         }
       }
@@ -444,7 +499,7 @@
         },
         "responses": {
           "200": {
-            "description": "Success"
+            "description": "OK"
           }
         }
       }
@@ -502,11 +557,19 @@
               "type": "boolean",
               "default": false
             }
+          },
+          {
+            "name": "tags",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "default": ""
+            }
           }
         ],
         "responses": {
           "200": {
-            "description": "Success",
+            "description": "OK",
             "content": {
               "application/json": {
                 "schema": {
@@ -539,7 +602,7 @@
         ],
         "responses": {
           "200": {
-            "description": "Success",
+            "description": "OK",
             "content": {
               "application/json": {
                 "schema": {
@@ -576,7 +639,7 @@
             }
           },
           {
-            "name": "tagList",
+            "name": "tags",
             "in": "query",
             "schema": {
               "type": "string",
@@ -610,7 +673,7 @@
         ],
         "responses": {
           "200": {
-            "description": "Success"
+            "description": "OK"
           }
         }
       }
@@ -631,7 +694,7 @@
         },
         "responses": {
           "200": {
-            "description": "Success",
+            "description": "OK",
             "content": {
               "application/json": {
                 "schema": {
@@ -648,7 +711,7 @@
         ],
         "responses": {
           "200": {
-            "description": "Success",
+            "description": "OK",
             "content": {
               "application/json": {
                 "schema": {
@@ -681,7 +744,7 @@
         ],
         "responses": {
           "200": {
-            "description": "Success"
+            "description": "OK"
           }
         }
       },
@@ -702,7 +765,7 @@
         ],
         "responses": {
           "200": {
-            "description": "Success",
+            "description": "OK",
             "content": {
               "application/json": {
                 "schema": {
@@ -721,7 +784,7 @@
         ],
         "responses": {
           "200": {
-            "description": "Success",
+            "description": "OK",
             "content": {
               "application/json": {
                 "schema": {
@@ -750,7 +813,7 @@
         },
         "responses": {
           "200": {
-            "description": "Success",
+            "description": "OK",
             "content": {
               "text/plain": {
                 "schema": {
@@ -798,7 +861,7 @@
         },
         "responses": {
           "200": {
-            "description": "Success",
+            "description": "OK",
             "content": {
               "text/plain": {
                 "schema": {
@@ -836,7 +899,7 @@
         ],
         "responses": {
           "200": {
-            "description": "Success"
+            "description": "OK"
           }
         }
       },
@@ -857,7 +920,7 @@
         ],
         "responses": {
           "200": {
-            "description": "Success",
+            "description": "OK",
             "content": {
               "application/json": {
                 "schema": {
@@ -870,6 +933,26 @@
       }
     },
     "/api/v3/customformat": {
+      "get": {
+        "tags": [
+          "CustomFormat"
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/CustomFormatResource"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
       "post": {
         "tags": [
           "CustomFormat"
@@ -885,7 +968,7 @@
         },
         "responses": {
           "200": {
-            "description": "Success",
+            "description": "OK",
             "content": {
               "text/plain": {
                 "schema": {
@@ -900,26 +983,6 @@
               "text/json": {
                 "schema": {
                   "$ref": "#/components/schemas/CustomFormatResource"
-                }
-              }
-            }
-          }
-        }
-      },
-      "get": {
-        "tags": [
-          "CustomFormat"
-        ],
-        "responses": {
-          "200": {
-            "description": "Success",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/CustomFormatResource"
-                  }
                 }
               }
             }
@@ -953,7 +1016,7 @@
         },
         "responses": {
           "200": {
-            "description": "Success",
+            "description": "OK",
             "content": {
               "text/plain": {
                 "schema": {
@@ -991,7 +1054,7 @@
         ],
         "responses": {
           "200": {
-            "description": "Success"
+            "description": "OK"
           }
         }
       },
@@ -1012,7 +1075,7 @@
         ],
         "responses": {
           "200": {
-            "description": "Success",
+            "description": "OK",
             "content": {
               "application/json": {
                 "schema": {
@@ -1024,6 +1087,53 @@
         }
       }
     },
+    "/api/v3/customformat/bulk": {
+      "put": {
+        "tags": [
+          "CustomFormat"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CustomFormatBulkResource"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CustomFormatResource"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "CustomFormat"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CustomFormatBulkResource"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
     "/api/v3/customformat/schema": {
       "get": {
         "tags": [
@@ -1031,7 +1141,7 @@
         ],
         "responses": {
           "200": {
-            "description": "Success"
+            "description": "OK"
           }
         }
       }
@@ -1042,6 +1152,38 @@
           "Cutoff"
         ],
         "parameters": [
+          {
+            "name": "page",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "default": 1
+            }
+          },
+          {
+            "name": "pageSize",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "default": 10
+            }
+          },
+          {
+            "name": "sortKey",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "sortDirection",
+            "in": "query",
+            "schema": {
+              "$ref": "#/components/schemas/SortDirection"
+            }
+          },
           {
             "name": "includeSeries",
             "in": "query",
@@ -1065,11 +1207,19 @@
               "type": "boolean",
               "default": false
             }
+          },
+          {
+            "name": "monitored",
+            "in": "query",
+            "schema": {
+              "type": "boolean",
+              "default": true
+            }
           }
         ],
         "responses": {
           "200": {
-            "description": "Success",
+            "description": "OK",
             "content": {
               "application/json": {
                 "schema": {
@@ -1099,7 +1249,7 @@
         ],
         "responses": {
           "200": {
-            "description": "Success",
+            "description": "OK",
             "content": {
               "application/json": {
                 "schema": {
@@ -1127,7 +1277,7 @@
         },
         "responses": {
           "200": {
-            "description": "Success",
+            "description": "OK",
             "content": {
               "text/plain": {
                 "schema": {
@@ -1154,7 +1304,7 @@
         ],
         "responses": {
           "200": {
-            "description": "Success",
+            "description": "OK",
             "content": {
               "application/json": {
                 "schema": {
@@ -1187,7 +1337,7 @@
         ],
         "responses": {
           "200": {
-            "description": "Success"
+            "description": "OK"
           }
         }
       },
@@ -1216,7 +1366,7 @@
         },
         "responses": {
           "200": {
-            "description": "Success",
+            "description": "OK",
             "content": {
               "text/plain": {
                 "schema": {
@@ -1254,7 +1404,7 @@
         ],
         "responses": {
           "200": {
-            "description": "Success",
+            "description": "OK",
             "content": {
               "application/json": {
                 "schema": {
@@ -1292,7 +1442,7 @@
         ],
         "responses": {
           "200": {
-            "description": "Success",
+            "description": "OK",
             "content": {
               "text/plain": {
                 "schema": {
@@ -1330,7 +1480,7 @@
         ],
         "responses": {
           "200": {
-            "description": "Success",
+            "description": "OK",
             "content": {
               "application/json": {
                 "schema": {
@@ -1352,7 +1502,7 @@
         ],
         "responses": {
           "200": {
-            "description": "Success",
+            "description": "OK",
             "content": {
               "application/json": {
                 "schema": {
@@ -1370,6 +1520,16 @@
         "tags": [
           "DownloadClient"
         ],
+        "parameters": [
+          {
+            "name": "forceSave",
+            "in": "query",
+            "schema": {
+              "type": "boolean",
+              "default": false
+            }
+          }
+        ],
         "requestBody": {
           "content": {
             "application/json": {
@@ -1381,19 +1541,9 @@
         },
         "responses": {
           "200": {
-            "description": "Success",
+            "description": "OK",
             "content": {
-              "text/plain": {
-                "schema": {
-                  "$ref": "#/components/schemas/DownloadClientResource"
-                }
-              },
               "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/DownloadClientResource"
-                }
-              },
-              "text/json": {
                 "schema": {
                   "$ref": "#/components/schemas/DownloadClientResource"
                 }
@@ -1414,7 +1564,16 @@
             "in": "path",
             "required": true,
             "schema": {
-              "type": "string"
+              "type": "integer",
+              "format": "int32"
+            }
+          },
+          {
+            "name": "forceSave",
+            "in": "query",
+            "schema": {
+              "type": "boolean",
+              "default": false
             }
           }
         ],
@@ -1429,19 +1588,9 @@
         },
         "responses": {
           "200": {
-            "description": "Success",
+            "description": "OK",
             "content": {
-              "text/plain": {
-                "schema": {
-                  "$ref": "#/components/schemas/DownloadClientResource"
-                }
-              },
               "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/DownloadClientResource"
-                }
-              },
-              "text/json": {
                 "schema": {
                   "$ref": "#/components/schemas/DownloadClientResource"
                 }
@@ -1467,7 +1616,7 @@
         ],
         "responses": {
           "200": {
-            "description": "Success"
+            "description": "OK"
           }
         }
       },
@@ -1488,7 +1637,7 @@
         ],
         "responses": {
           "200": {
-            "description": "Success",
+            "description": "OK",
             "content": {
               "application/json": {
                 "schema": {
@@ -1500,6 +1649,53 @@
         }
       }
     },
+    "/api/v3/downloadclient/bulk": {
+      "put": {
+        "tags": [
+          "DownloadClient"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DownloadClientBulkResource"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DownloadClientResource"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "DownloadClient"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DownloadClientBulkResource"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
     "/api/v3/downloadclient/schema": {
       "get": {
         "tags": [
@@ -1507,7 +1703,7 @@
         ],
         "responses": {
           "200": {
-            "description": "Success",
+            "description": "OK",
             "content": {
               "application/json": {
                 "schema": {
@@ -1527,6 +1723,16 @@
         "tags": [
           "DownloadClient"
         ],
+        "parameters": [
+          {
+            "name": "forceTest",
+            "in": "query",
+            "schema": {
+              "type": "boolean",
+              "default": false
+            }
+          }
+        ],
         "requestBody": {
           "content": {
             "application/json": {
@@ -1538,7 +1744,7 @@
         },
         "responses": {
           "200": {
-            "description": "Success"
+            "description": "OK"
           }
         }
       }
@@ -1550,7 +1756,7 @@
         ],
         "responses": {
           "200": {
-            "description": "Success"
+            "description": "OK"
           }
         }
       }
@@ -1581,7 +1787,7 @@
         },
         "responses": {
           "200": {
-            "description": "Success"
+            "description": "OK"
           }
         }
       }
@@ -1593,7 +1799,7 @@
         ],
         "responses": {
           "200": {
-            "description": "Success",
+            "description": "OK",
             "content": {
               "application/json": {
                 "schema": {
@@ -1631,7 +1837,7 @@
         },
         "responses": {
           "200": {
-            "description": "Success",
+            "description": "OK",
             "content": {
               "text/plain": {
                 "schema": {
@@ -1669,7 +1875,7 @@
         ],
         "responses": {
           "200": {
-            "description": "Success",
+            "description": "OK",
             "content": {
               "application/json": {
                 "schema": {
@@ -1723,6 +1929,22 @@
             }
           },
           {
+            "name": "includeSeries",
+            "in": "query",
+            "schema": {
+              "type": "boolean",
+              "default": false
+            }
+          },
+          {
+            "name": "includeEpisodeFile",
+            "in": "query",
+            "schema": {
+              "type": "boolean",
+              "default": false
+            }
+          },
+          {
             "name": "includeImages",
             "in": "query",
             "schema": {
@@ -1733,7 +1955,7 @@
         ],
         "responses": {
           "200": {
-            "description": "Success",
+            "description": "OK",
             "content": {
               "application/json": {
                 "schema": {
@@ -1775,7 +1997,7 @@
         },
         "responses": {
           "200": {
-            "description": "Success",
+            "description": "OK",
             "content": {
               "text/plain": {
                 "schema": {
@@ -1813,7 +2035,7 @@
         ],
         "responses": {
           "200": {
-            "description": "Success",
+            "description": "OK",
             "content": {
               "application/json": {
                 "schema": {
@@ -1830,6 +2052,16 @@
         "tags": [
           "Episode"
         ],
+        "parameters": [
+          {
+            "name": "includeImages",
+            "in": "query",
+            "schema": {
+              "type": "boolean",
+              "default": false
+            }
+          }
+        ],
         "requestBody": {
           "content": {
             "application/json": {
@@ -1841,7 +2073,7 @@
         },
         "responses": {
           "200": {
-            "description": "Success"
+            "description": "OK"
           }
         }
       }
@@ -1874,7 +2106,7 @@
         ],
         "responses": {
           "200": {
-            "description": "Success",
+            "description": "OK",
             "content": {
               "application/json": {
                 "schema": {
@@ -1915,7 +2147,7 @@
         },
         "responses": {
           "200": {
-            "description": "Success",
+            "description": "OK",
             "content": {
               "text/plain": {
                 "schema": {
@@ -1953,7 +2185,7 @@
         ],
         "responses": {
           "200": {
-            "description": "Success"
+            "description": "OK"
           }
         }
       },
@@ -1974,7 +2206,7 @@
         ],
         "responses": {
           "200": {
-            "description": "Success",
+            "description": "OK",
             "content": {
               "application/json": {
                 "schema": {
@@ -2002,7 +2234,7 @@
         },
         "responses": {
           "200": {
-            "description": "Success"
+            "description": "OK"
           }
         }
       }
@@ -2023,7 +2255,7 @@
         },
         "responses": {
           "200": {
-            "description": "Success"
+            "description": "OK"
           }
         }
       },
@@ -2045,7 +2277,7 @@
         },
         "responses": {
           "200": {
-            "description": "Success"
+            "description": "OK"
           }
         }
       }
@@ -2082,7 +2314,7 @@
         ],
         "responses": {
           "200": {
-            "description": "Success"
+            "description": "OK"
           }
         }
       }
@@ -2103,7 +2335,7 @@
         ],
         "responses": {
           "200": {
-            "description": "Success"
+            "description": "OK"
           }
         }
       }
@@ -2124,7 +2356,7 @@
         ],
         "responses": {
           "200": {
-            "description": "Success"
+            "description": "OK"
           }
         }
       }
@@ -2136,7 +2368,7 @@
         ],
         "responses": {
           "200": {
-            "description": "Success",
+            "description": "OK",
             "content": {
               "application/json": {
                 "schema": {
@@ -2151,42 +2383,44 @@
         }
       }
     },
-    "/api/v3/health/{id}": {
-      "get": {
-        "tags": [
-          "Health"
-        ],
-        "parameters": [
-          {
-            "name": "id",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "integer",
-              "format": "int32"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Success",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/HealthResource"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
     "/api/v3/history": {
       "get": {
         "tags": [
           "History"
         ],
         "parameters": [
+          {
+            "name": "page",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "default": 1
+            }
+          },
+          {
+            "name": "pageSize",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "default": 10
+            }
+          },
+          {
+            "name": "sortKey",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "sortDirection",
+            "in": "query",
+            "schema": {
+              "$ref": "#/components/schemas/SortDirection"
+            }
+          },
           {
             "name": "includeSeries",
             "in": "query",
@@ -2200,11 +2434,70 @@
             "schema": {
               "type": "boolean"
             }
+          },
+          {
+            "name": "eventType",
+            "in": "query",
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "integer",
+                "format": "int32"
+              }
+            }
+          },
+          {
+            "name": "episodeId",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          },
+          {
+            "name": "downloadId",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "seriesIds",
+            "in": "query",
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "integer",
+                "format": "int32"
+              }
+            }
+          },
+          {
+            "name": "languages",
+            "in": "query",
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "integer",
+                "format": "int32"
+              }
+            }
+          },
+          {
+            "name": "quality",
+            "in": "query",
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "integer",
+                "format": "int32"
+              }
+            }
           }
         ],
         "responses": {
           "200": {
-            "description": "Success",
+            "description": "OK",
             "content": {
               "application/json": {
                 "schema": {
@@ -2256,7 +2549,7 @@
         ],
         "responses": {
           "200": {
-            "description": "Success",
+            "description": "OK",
             "content": {
               "application/json": {
                 "schema": {
@@ -2319,7 +2612,7 @@
         ],
         "responses": {
           "200": {
-            "description": "Success",
+            "description": "OK",
             "content": {
               "application/json": {
                 "schema": {
@@ -2352,7 +2645,7 @@
         ],
         "responses": {
           "200": {
-            "description": "Success"
+            "description": "OK"
           }
         }
       }
@@ -2364,7 +2657,7 @@
         ],
         "responses": {
           "200": {
-            "description": "Success",
+            "description": "OK",
             "content": {
               "text/plain": {
                 "schema": {
@@ -2422,7 +2715,7 @@
         },
         "responses": {
           "200": {
-            "description": "Success",
+            "description": "OK",
             "content": {
               "text/plain": {
                 "schema": {
@@ -2460,7 +2753,7 @@
         ],
         "responses": {
           "200": {
-            "description": "Success",
+            "description": "OK",
             "content": {
               "application/json": {
                 "schema": {
@@ -2479,7 +2772,7 @@
         ],
         "responses": {
           "200": {
-            "description": "Success",
+            "description": "OK",
             "content": {
               "application/json": {
                 "schema": {
@@ -2497,6 +2790,16 @@
         "tags": [
           "ImportList"
         ],
+        "parameters": [
+          {
+            "name": "forceSave",
+            "in": "query",
+            "schema": {
+              "type": "boolean",
+              "default": false
+            }
+          }
+        ],
         "requestBody": {
           "content": {
             "application/json": {
@@ -2508,19 +2811,9 @@
         },
         "responses": {
           "200": {
-            "description": "Success",
+            "description": "OK",
             "content": {
-              "text/plain": {
-                "schema": {
-                  "$ref": "#/components/schemas/ImportListResource"
-                }
-              },
               "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ImportListResource"
-                }
-              },
-              "text/json": {
                 "schema": {
                   "$ref": "#/components/schemas/ImportListResource"
                 }
@@ -2541,7 +2834,16 @@
             "in": "path",
             "required": true,
             "schema": {
-              "type": "string"
+              "type": "integer",
+              "format": "int32"
+            }
+          },
+          {
+            "name": "forceSave",
+            "in": "query",
+            "schema": {
+              "type": "boolean",
+              "default": false
             }
           }
         ],
@@ -2556,19 +2858,9 @@
         },
         "responses": {
           "200": {
-            "description": "Success",
+            "description": "OK",
             "content": {
-              "text/plain": {
-                "schema": {
-                  "$ref": "#/components/schemas/ImportListResource"
-                }
-              },
               "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ImportListResource"
-                }
-              },
-              "text/json": {
                 "schema": {
                   "$ref": "#/components/schemas/ImportListResource"
                 }
@@ -2594,7 +2886,7 @@
         ],
         "responses": {
           "200": {
-            "description": "Success"
+            "description": "OK"
           }
         }
       },
@@ -2615,7 +2907,7 @@
         ],
         "responses": {
           "200": {
-            "description": "Success",
+            "description": "OK",
             "content": {
               "application/json": {
                 "schema": {
@@ -2627,6 +2919,53 @@
         }
       }
     },
+    "/api/v3/importlist/bulk": {
+      "put": {
+        "tags": [
+          "ImportList"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ImportListBulkResource"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ImportListResource"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "ImportList"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ImportListBulkResource"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
     "/api/v3/importlist/schema": {
       "get": {
         "tags": [
@@ -2634,7 +2973,7 @@
         ],
         "responses": {
           "200": {
-            "description": "Success",
+            "description": "OK",
             "content": {
               "application/json": {
                 "schema": {
@@ -2654,6 +2993,16 @@
         "tags": [
           "ImportList"
         ],
+        "parameters": [
+          {
+            "name": "forceTest",
+            "in": "query",
+            "schema": {
+              "type": "boolean",
+              "default": false
+            }
+          }
+        ],
         "requestBody": {
           "content": {
             "application/json": {
@@ -2665,7 +3014,7 @@
         },
         "responses": {
           "200": {
-            "description": "Success"
+            "description": "OK"
           }
         }
       }
@@ -2677,7 +3026,7 @@
         ],
         "responses": {
           "200": {
-            "description": "Success"
+            "description": "OK"
           }
         }
       }
@@ -2708,7 +3057,102 @@
         },
         "responses": {
           "200": {
-            "description": "Success"
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/v3/config/importlist": {
+      "get": {
+        "tags": [
+          "ImportListConfig"
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ImportListConfigResource"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v3/config/importlist/{id}": {
+      "put": {
+        "tags": [
+          "ImportListConfig"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ImportListConfigResource"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/ImportListConfigResource"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ImportListConfigResource"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ImportListConfigResource"
+                }
+              }
+            }
+          }
+        }
+      },
+      "get": {
+        "tags": [
+          "ImportListConfig"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ImportListConfigResource"
+                }
+              }
+            }
           }
         }
       }
@@ -2720,7 +3164,7 @@
         ],
         "responses": {
           "200": {
-            "description": "Success",
+            "description": "OK",
             "content": {
               "application/json": {
                 "schema": {
@@ -2732,7 +3176,8 @@
               }
             }
           }
-        }
+        },
+        "deprecated": true
       },
       "post": {
         "tags": [
@@ -2749,7 +3194,7 @@
         },
         "responses": {
           "200": {
-            "description": "Success",
+            "description": "OK",
             "content": {
               "text/plain": {
                 "schema": {
@@ -2764,6 +3209,59 @@
               "text/json": {
                 "schema": {
                   "$ref": "#/components/schemas/ImportListExclusionResource"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v3/importlistexclusion/paged": {
+      "get": {
+        "tags": [
+          "ImportListExclusion"
+        ],
+        "parameters": [
+          {
+            "name": "page",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "default": 1
+            }
+          },
+          {
+            "name": "pageSize",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "default": 10
+            }
+          },
+          {
+            "name": "sortKey",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "sortDirection",
+            "in": "query",
+            "schema": {
+              "$ref": "#/components/schemas/SortDirection"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ImportListExclusionResourcePagingResource"
                 }
               }
             }
@@ -2797,7 +3295,7 @@
         },
         "responses": {
           "200": {
-            "description": "Success",
+            "description": "OK",
             "content": {
               "text/plain": {
                 "schema": {
@@ -2835,7 +3333,7 @@
         ],
         "responses": {
           "200": {
-            "description": "Success"
+            "description": "OK"
           }
         }
       },
@@ -2856,7 +3354,7 @@
         ],
         "responses": {
           "200": {
-            "description": "Success",
+            "description": "OK",
             "content": {
               "application/json": {
                 "schema": {
@@ -2868,6 +3366,37 @@
         }
       }
     },
+    "/api/v3/importlistexclusion/bulk": {
+      "delete": {
+        "tags": [
+          "ImportListExclusion"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ImportListExclusionBulkResource"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ImportListExclusionBulkResource"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/ImportListExclusionBulkResource"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
     "/api/v3/indexer": {
       "get": {
         "tags": [
@@ -2875,7 +3404,7 @@
         ],
         "responses": {
           "200": {
-            "description": "Success",
+            "description": "OK",
             "content": {
               "application/json": {
                 "schema": {
@@ -2893,6 +3422,16 @@
         "tags": [
           "Indexer"
         ],
+        "parameters": [
+          {
+            "name": "forceSave",
+            "in": "query",
+            "schema": {
+              "type": "boolean",
+              "default": false
+            }
+          }
+        ],
         "requestBody": {
           "content": {
             "application/json": {
@@ -2904,19 +3443,9 @@
         },
         "responses": {
           "200": {
-            "description": "Success",
+            "description": "OK",
             "content": {
-              "text/plain": {
-                "schema": {
-                  "$ref": "#/components/schemas/IndexerResource"
-                }
-              },
               "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/IndexerResource"
-                }
-              },
-              "text/json": {
                 "schema": {
                   "$ref": "#/components/schemas/IndexerResource"
                 }
@@ -2937,7 +3466,16 @@
             "in": "path",
             "required": true,
             "schema": {
-              "type": "string"
+              "type": "integer",
+              "format": "int32"
+            }
+          },
+          {
+            "name": "forceSave",
+            "in": "query",
+            "schema": {
+              "type": "boolean",
+              "default": false
             }
           }
         ],
@@ -2952,19 +3490,9 @@
         },
         "responses": {
           "200": {
-            "description": "Success",
+            "description": "OK",
             "content": {
-              "text/plain": {
-                "schema": {
-                  "$ref": "#/components/schemas/IndexerResource"
-                }
-              },
               "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/IndexerResource"
-                }
-              },
-              "text/json": {
                 "schema": {
                   "$ref": "#/components/schemas/IndexerResource"
                 }
@@ -2990,7 +3518,7 @@
         ],
         "responses": {
           "200": {
-            "description": "Success"
+            "description": "OK"
           }
         }
       },
@@ -3011,7 +3539,7 @@
         ],
         "responses": {
           "200": {
-            "description": "Success",
+            "description": "OK",
             "content": {
               "application/json": {
                 "schema": {
@@ -3023,6 +3551,53 @@
         }
       }
     },
+    "/api/v3/indexer/bulk": {
+      "put": {
+        "tags": [
+          "Indexer"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/IndexerBulkResource"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/IndexerResource"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "Indexer"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/IndexerBulkResource"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
     "/api/v3/indexer/schema": {
       "get": {
         "tags": [
@@ -3030,7 +3605,7 @@
         ],
         "responses": {
           "200": {
-            "description": "Success",
+            "description": "OK",
             "content": {
               "application/json": {
                 "schema": {
@@ -3050,6 +3625,16 @@
         "tags": [
           "Indexer"
         ],
+        "parameters": [
+          {
+            "name": "forceTest",
+            "in": "query",
+            "schema": {
+              "type": "boolean",
+              "default": false
+            }
+          }
+        ],
         "requestBody": {
           "content": {
             "application/json": {
@@ -3061,7 +3646,7 @@
         },
         "responses": {
           "200": {
-            "description": "Success"
+            "description": "OK"
           }
         }
       }
@@ -3073,7 +3658,7 @@
         ],
         "responses": {
           "200": {
-            "description": "Success"
+            "description": "OK"
           }
         }
       }
@@ -3104,7 +3689,7 @@
         },
         "responses": {
           "200": {
-            "description": "Success"
+            "description": "OK"
           }
         }
       }
@@ -3116,7 +3701,7 @@
         ],
         "responses": {
           "200": {
-            "description": "Success",
+            "description": "OK",
             "content": {
               "application/json": {
                 "schema": {
@@ -3154,7 +3739,7 @@
         },
         "responses": {
           "200": {
-            "description": "Success",
+            "description": "OK",
             "content": {
               "text/plain": {
                 "schema": {
@@ -3192,7 +3777,7 @@
         ],
         "responses": {
           "200": {
-            "description": "Success",
+            "description": "OK",
             "content": {
               "application/json": {
                 "schema": {
@@ -3204,14 +3789,40 @@
         }
       }
     },
-    "/initialize.js": {
+    "/api/v3/indexerflag": {
       "get": {
         "tags": [
-          "InitializeJs"
+          "IndexerFlag"
         ],
         "responses": {
           "200": {
-            "description": "Success"
+            "description": "OK",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/IndexerFlagResource"
+                  }
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/IndexerFlagResource"
+                  }
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/IndexerFlagResource"
+                  }
+                }
+              }
+            }
           }
         }
       }
@@ -3223,7 +3834,7 @@
         ],
         "responses": {
           "200": {
-            "description": "Success",
+            "description": "OK",
             "content": {
               "text/plain": {
                 "schema": {
@@ -3272,7 +3883,7 @@
         ],
         "responses": {
           "200": {
-            "description": "Success",
+            "description": "OK",
             "content": {
               "application/json": {
                 "schema": {
@@ -3300,7 +3911,7 @@
         },
         "responses": {
           "200": {
-            "description": "Success",
+            "description": "OK",
             "content": {
               "application/json": {
                 "schema": {
@@ -3318,7 +3929,7 @@
         ],
         "responses": {
           "200": {
-            "description": "Success",
+            "description": "OK",
             "content": {
               "application/json": {
                 "schema": {
@@ -3352,7 +3963,7 @@
         ],
         "responses": {
           "200": {
-            "description": "Success"
+            "description": "OK"
           }
         },
         "deprecated": true
@@ -3382,7 +3993,7 @@
         },
         "responses": {
           "200": {
-            "description": "Success",
+            "description": "OK",
             "content": {
               "application/json": {
                 "schema": {
@@ -3411,7 +4022,7 @@
         ],
         "responses": {
           "200": {
-            "description": "Success",
+            "description": "OK",
             "content": {
               "application/json": {
                 "schema": {
@@ -3430,7 +4041,7 @@
         ],
         "responses": {
           "200": {
-            "description": "Success",
+            "description": "OK",
             "content": {
               "application/json": {
                 "schema": {
@@ -3443,36 +4054,6 @@
         "deprecated": true
       }
     },
-    "/api/v3/languageprofile/schema/{id}": {
-      "get": {
-        "tags": [
-          "LanguageProfileSchema"
-        ],
-        "parameters": [
-          {
-            "name": "id",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "integer",
-              "format": "int32"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Success",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/LanguageProfileResource"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
     "/api/v3/localization": {
       "get": {
         "tags": [
@@ -3480,7 +4061,7 @@
         ],
         "responses": {
           "200": {
-            "description": "Success",
+            "description": "OK",
             "content": {
               "application/json": {
                 "schema": {
@@ -3499,7 +4080,7 @@
         ],
         "responses": {
           "200": {
-            "description": "Success",
+            "description": "OK",
             "content": {
               "application/json": {
                 "schema": {
@@ -3529,7 +4110,7 @@
         ],
         "responses": {
           "200": {
-            "description": "Success",
+            "description": "OK",
             "content": {
               "application/json": {
                 "schema": {
@@ -3546,9 +4127,50 @@
         "tags": [
           "Log"
         ],
+        "parameters": [
+          {
+            "name": "page",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "default": 1
+            }
+          },
+          {
+            "name": "pageSize",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "default": 10
+            }
+          },
+          {
+            "name": "sortKey",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "sortDirection",
+            "in": "query",
+            "schema": {
+              "$ref": "#/components/schemas/SortDirection"
+            }
+          },
+          {
+            "name": "level",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
         "responses": {
           "200": {
-            "description": "Success",
+            "description": "OK",
             "content": {
               "application/json": {
                 "schema": {
@@ -3567,7 +4189,7 @@
         ],
         "responses": {
           "200": {
-            "description": "Success",
+            "description": "OK",
             "content": {
               "application/json": {
                 "schema": {
@@ -3600,7 +4222,7 @@
         ],
         "responses": {
           "200": {
-            "description": "Success"
+            "description": "OK"
           }
         }
       }
@@ -3652,7 +4274,7 @@
         ],
         "responses": {
           "200": {
-            "description": "Success",
+            "description": "OK",
             "content": {
               "application/json": {
                 "schema": {
@@ -3684,7 +4306,7 @@
         },
         "responses": {
           "200": {
-            "description": "Success"
+            "description": "OK"
           }
         }
       }
@@ -3716,7 +4338,7 @@
         ],
         "responses": {
           "200": {
-            "description": "Success"
+            "description": "OK"
           }
         }
       }
@@ -3728,7 +4350,7 @@
         ],
         "responses": {
           "200": {
-            "description": "Success",
+            "description": "OK",
             "content": {
               "application/json": {
                 "schema": {
@@ -3766,7 +4388,7 @@
         },
         "responses": {
           "200": {
-            "description": "Success",
+            "description": "OK",
             "content": {
               "text/plain": {
                 "schema": {
@@ -3804,7 +4426,7 @@
         ],
         "responses": {
           "200": {
-            "description": "Success",
+            "description": "OK",
             "content": {
               "application/json": {
                 "schema": {
@@ -3823,7 +4445,7 @@
         ],
         "responses": {
           "200": {
-            "description": "Success",
+            "description": "OK",
             "content": {
               "application/json": {
                 "schema": {
@@ -3841,6 +4463,16 @@
         "tags": [
           "Metadata"
         ],
+        "parameters": [
+          {
+            "name": "forceSave",
+            "in": "query",
+            "schema": {
+              "type": "boolean",
+              "default": false
+            }
+          }
+        ],
         "requestBody": {
           "content": {
             "application/json": {
@@ -3852,19 +4484,9 @@
         },
         "responses": {
           "200": {
-            "description": "Success",
+            "description": "OK",
             "content": {
-              "text/plain": {
-                "schema": {
-                  "$ref": "#/components/schemas/MetadataResource"
-                }
-              },
               "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/MetadataResource"
-                }
-              },
-              "text/json": {
                 "schema": {
                   "$ref": "#/components/schemas/MetadataResource"
                 }
@@ -3885,7 +4507,16 @@
             "in": "path",
             "required": true,
             "schema": {
-              "type": "string"
+              "type": "integer",
+              "format": "int32"
+            }
+          },
+          {
+            "name": "forceSave",
+            "in": "query",
+            "schema": {
+              "type": "boolean",
+              "default": false
             }
           }
         ],
@@ -3900,19 +4531,9 @@
         },
         "responses": {
           "200": {
-            "description": "Success",
+            "description": "OK",
             "content": {
-              "text/plain": {
-                "schema": {
-                  "$ref": "#/components/schemas/MetadataResource"
-                }
-              },
               "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/MetadataResource"
-                }
-              },
-              "text/json": {
                 "schema": {
                   "$ref": "#/components/schemas/MetadataResource"
                 }
@@ -3938,7 +4559,7 @@
         ],
         "responses": {
           "200": {
-            "description": "Success"
+            "description": "OK"
           }
         }
       },
@@ -3959,7 +4580,7 @@
         ],
         "responses": {
           "200": {
-            "description": "Success",
+            "description": "OK",
             "content": {
               "application/json": {
                 "schema": {
@@ -3978,7 +4599,7 @@
         ],
         "responses": {
           "200": {
-            "description": "Success",
+            "description": "OK",
             "content": {
               "application/json": {
                 "schema": {
@@ -3998,6 +4619,16 @@
         "tags": [
           "Metadata"
         ],
+        "parameters": [
+          {
+            "name": "forceTest",
+            "in": "query",
+            "schema": {
+              "type": "boolean",
+              "default": false
+            }
+          }
+        ],
         "requestBody": {
           "content": {
             "application/json": {
@@ -4009,7 +4640,7 @@
         },
         "responses": {
           "200": {
-            "description": "Success"
+            "description": "OK"
           }
         }
       }
@@ -4021,7 +4652,7 @@
         ],
         "responses": {
           "200": {
-            "description": "Success"
+            "description": "OK"
           }
         }
       }
@@ -4052,7 +4683,7 @@
         },
         "responses": {
           "200": {
-            "description": "Success"
+            "description": "OK"
           }
         }
       }
@@ -4063,6 +4694,38 @@
           "Missing"
         ],
         "parameters": [
+          {
+            "name": "page",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "default": 1
+            }
+          },
+          {
+            "name": "pageSize",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "default": 10
+            }
+          },
+          {
+            "name": "sortKey",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "sortDirection",
+            "in": "query",
+            "schema": {
+              "$ref": "#/components/schemas/SortDirection"
+            }
+          },
           {
             "name": "includeSeries",
             "in": "query",
@@ -4078,11 +4741,19 @@
               "type": "boolean",
               "default": false
             }
+          },
+          {
+            "name": "monitored",
+            "in": "query",
+            "schema": {
+              "type": "boolean",
+              "default": true
+            }
           }
         ],
         "responses": {
           "200": {
-            "description": "Success",
+            "description": "OK",
             "content": {
               "application/json": {
                 "schema": {
@@ -4112,7 +4783,7 @@
         ],
         "responses": {
           "200": {
-            "description": "Success",
+            "description": "OK",
             "content": {
               "application/json": {
                 "schema": {
@@ -4131,7 +4802,7 @@
         ],
         "responses": {
           "200": {
-            "description": "Success",
+            "description": "OK",
             "content": {
               "text/plain": {
                 "schema": {
@@ -4189,7 +4860,7 @@
         },
         "responses": {
           "200": {
-            "description": "Success",
+            "description": "OK",
             "content": {
               "text/plain": {
                 "schema": {
@@ -4227,7 +4898,7 @@
         ],
         "responses": {
           "200": {
-            "description": "Success",
+            "description": "OK",
             "content": {
               "application/json": {
                 "schema": {
@@ -4246,21 +4917,21 @@
         ],
         "parameters": [
           {
-            "name": "RenameEpisodes",
+            "name": "renameEpisodes",
             "in": "query",
             "schema": {
               "type": "boolean"
             }
           },
           {
-            "name": "ReplaceIllegalCharacters",
+            "name": "replaceIllegalCharacters",
             "in": "query",
             "schema": {
               "type": "boolean"
             }
           },
           {
-            "name": "MultiEpisodeStyle",
+            "name": "colonReplacementFormat",
             "in": "query",
             "schema": {
               "type": "integer",
@@ -4268,91 +4939,14 @@
             }
           },
           {
-            "name": "StandardEpisodeFormat",
+            "name": "customColonReplacementFormat",
             "in": "query",
             "schema": {
               "type": "string"
             }
           },
           {
-            "name": "DailyEpisodeFormat",
-            "in": "query",
-            "schema": {
-              "type": "string"
-            }
-          },
-          {
-            "name": "AnimeEpisodeFormat",
-            "in": "query",
-            "schema": {
-              "type": "string"
-            }
-          },
-          {
-            "name": "SeriesFolderFormat",
-            "in": "query",
-            "schema": {
-              "type": "string"
-            }
-          },
-          {
-            "name": "SeasonFolderFormat",
-            "in": "query",
-            "schema": {
-              "type": "string"
-            }
-          },
-          {
-            "name": "SpecialsFolderFormat",
-            "in": "query",
-            "schema": {
-              "type": "string"
-            }
-          },
-          {
-            "name": "IncludeSeriesTitle",
-            "in": "query",
-            "schema": {
-              "type": "boolean"
-            }
-          },
-          {
-            "name": "IncludeEpisodeTitle",
-            "in": "query",
-            "schema": {
-              "type": "boolean"
-            }
-          },
-          {
-            "name": "IncludeQuality",
-            "in": "query",
-            "schema": {
-              "type": "boolean"
-            }
-          },
-          {
-            "name": "ReplaceSpaces",
-            "in": "query",
-            "schema": {
-              "type": "boolean"
-            }
-          },
-          {
-            "name": "Separator",
-            "in": "query",
-            "schema": {
-              "type": "string"
-            }
-          },
-          {
-            "name": "NumberStyle",
-            "in": "query",
-            "schema": {
-              "type": "string"
-            }
-          },
-          {
-            "name": "Id",
+            "name": "multiEpisodeStyle",
             "in": "query",
             "schema": {
               "type": "integer",
@@ -4360,7 +4954,57 @@
             }
           },
           {
-            "name": "ResourceName",
+            "name": "standardEpisodeFormat",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "dailyEpisodeFormat",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "animeEpisodeFormat",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "seriesFolderFormat",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "seasonFolderFormat",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "specialsFolderFormat",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "id",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          },
+          {
+            "name": "resourceName",
             "in": "query",
             "schema": {
               "type": "string"
@@ -4369,7 +5013,7 @@
         ],
         "responses": {
           "200": {
-            "description": "Success"
+            "description": "OK"
           }
         }
       }
@@ -4381,7 +5025,7 @@
         ],
         "responses": {
           "200": {
-            "description": "Success",
+            "description": "OK",
             "content": {
               "application/json": {
                 "schema": {
@@ -4399,6 +5043,16 @@
         "tags": [
           "Notification"
         ],
+        "parameters": [
+          {
+            "name": "forceSave",
+            "in": "query",
+            "schema": {
+              "type": "boolean",
+              "default": false
+            }
+          }
+        ],
         "requestBody": {
           "content": {
             "application/json": {
@@ -4410,19 +5064,9 @@
         },
         "responses": {
           "200": {
-            "description": "Success",
+            "description": "OK",
             "content": {
-              "text/plain": {
-                "schema": {
-                  "$ref": "#/components/schemas/NotificationResource"
-                }
-              },
               "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/NotificationResource"
-                }
-              },
-              "text/json": {
                 "schema": {
                   "$ref": "#/components/schemas/NotificationResource"
                 }
@@ -4443,7 +5087,16 @@
             "in": "path",
             "required": true,
             "schema": {
-              "type": "string"
+              "type": "integer",
+              "format": "int32"
+            }
+          },
+          {
+            "name": "forceSave",
+            "in": "query",
+            "schema": {
+              "type": "boolean",
+              "default": false
             }
           }
         ],
@@ -4458,19 +5111,9 @@
         },
         "responses": {
           "200": {
-            "description": "Success",
+            "description": "OK",
             "content": {
-              "text/plain": {
-                "schema": {
-                  "$ref": "#/components/schemas/NotificationResource"
-                }
-              },
               "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/NotificationResource"
-                }
-              },
-              "text/json": {
                 "schema": {
                   "$ref": "#/components/schemas/NotificationResource"
                 }
@@ -4496,7 +5139,7 @@
         ],
         "responses": {
           "200": {
-            "description": "Success"
+            "description": "OK"
           }
         }
       },
@@ -4517,7 +5160,7 @@
         ],
         "responses": {
           "200": {
-            "description": "Success",
+            "description": "OK",
             "content": {
               "application/json": {
                 "schema": {
@@ -4536,7 +5179,7 @@
         ],
         "responses": {
           "200": {
-            "description": "Success",
+            "description": "OK",
             "content": {
               "application/json": {
                 "schema": {
@@ -4556,6 +5199,16 @@
         "tags": [
           "Notification"
         ],
+        "parameters": [
+          {
+            "name": "forceTest",
+            "in": "query",
+            "schema": {
+              "type": "boolean",
+              "default": false
+            }
+          }
+        ],
         "requestBody": {
           "content": {
             "application/json": {
@@ -4567,7 +5220,7 @@
         },
         "responses": {
           "200": {
-            "description": "Success"
+            "description": "OK"
           }
         }
       }
@@ -4579,7 +5232,7 @@
         ],
         "responses": {
           "200": {
-            "description": "Success"
+            "description": "OK"
           }
         }
       }
@@ -4610,7 +5263,7 @@
         },
         "responses": {
           "200": {
-            "description": "Success"
+            "description": "OK"
           }
         }
       }
@@ -4638,7 +5291,7 @@
         ],
         "responses": {
           "200": {
-            "description": "Success",
+            "description": "OK",
             "content": {
               "application/json": {
                 "schema": {
@@ -4657,7 +5310,24 @@
         ],
         "responses": {
           "200": {
-            "description": "Success",
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PingResource"
+                }
+              }
+            }
+          }
+        }
+      },
+      "head": {
+        "tags": [
+          "Ping"
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
             "content": {
               "application/json": {
                 "schema": {
@@ -4705,7 +5375,7 @@
         },
         "responses": {
           "200": {
-            "description": "Success",
+            "description": "OK",
             "content": {
               "text/plain": {
                 "schema": {
@@ -4743,7 +5413,7 @@
         ],
         "responses": {
           "200": {
-            "description": "Success",
+            "description": "OK",
             "content": {
               "application/json": {
                 "schema": {
@@ -4762,7 +5432,7 @@
         ],
         "responses": {
           "200": {
-            "description": "Success",
+            "description": "OK",
             "content": {
               "text/plain": {
                 "schema": {
@@ -4828,7 +5498,36 @@
         },
         "responses": {
           "200": {
-            "description": "Success"
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/v3/qualitydefinition/limits": {
+      "get": {
+        "tags": [
+          "QualityDefinition"
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/QualityDefinitionLimitsResource"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/QualityDefinitionLimitsResource"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/QualityDefinitionLimitsResource"
+                }
+              }
+            }
           }
         }
       }
@@ -4849,7 +5548,7 @@
         },
         "responses": {
           "200": {
-            "description": "Success",
+            "description": "OK",
             "content": {
               "text/plain": {
                 "schema": {
@@ -4876,7 +5575,7 @@
         ],
         "responses": {
           "200": {
-            "description": "Success",
+            "description": "OK",
             "content": {
               "application/json": {
                 "schema": {
@@ -4909,7 +5608,7 @@
         ],
         "responses": {
           "200": {
-            "description": "Success"
+            "description": "OK"
           }
         }
       },
@@ -4938,7 +5637,7 @@
         },
         "responses": {
           "200": {
-            "description": "Success",
+            "description": "OK",
             "content": {
               "text/plain": {
                 "schema": {
@@ -4976,7 +5675,7 @@
         ],
         "responses": {
           "200": {
-            "description": "Success",
+            "description": "OK",
             "content": {
               "application/json": {
                 "schema": {
@@ -4995,7 +5694,7 @@
         ],
         "responses": {
           "200": {
-            "description": "Success",
+            "description": "OK",
             "content": {
               "text/plain": {
                 "schema": {
@@ -5047,39 +5746,27 @@
               "type": "boolean",
               "default": false
             }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Success"
-          }
-        }
-      },
-      "get": {
-        "tags": [
-          "Queue"
-        ],
-        "parameters": [
+          },
           {
-            "name": "id",
-            "in": "path",
-            "required": true,
+            "name": "skipRedownload",
+            "in": "query",
             "schema": {
-              "type": "integer",
-              "format": "int32"
+              "type": "boolean",
+              "default": false
+            }
+          },
+          {
+            "name": "changeCategory",
+            "in": "query",
+            "schema": {
+              "type": "boolean",
+              "default": false
             }
           }
         ],
         "responses": {
           "200": {
-            "description": "Success",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/QueueResource"
-                }
-              }
-            }
+            "description": "OK"
           }
         }
       }
@@ -5100,6 +5787,22 @@
           },
           {
             "name": "blocklist",
+            "in": "query",
+            "schema": {
+              "type": "boolean",
+              "default": false
+            }
+          },
+          {
+            "name": "skipRedownload",
+            "in": "query",
+            "schema": {
+              "type": "boolean",
+              "default": false
+            }
+          },
+          {
+            "name": "changeCategory",
             "in": "query",
             "schema": {
               "type": "boolean",
@@ -5128,7 +5831,7 @@
         },
         "responses": {
           "200": {
-            "description": "Success"
+            "description": "OK"
           }
         }
       }
@@ -5139,6 +5842,38 @@
           "Queue"
         ],
         "parameters": [
+          {
+            "name": "page",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "default": 1
+            }
+          },
+          {
+            "name": "pageSize",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "default": 10
+            }
+          },
+          {
+            "name": "sortKey",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "sortDirection",
+            "in": "query",
+            "schema": {
+              "$ref": "#/components/schemas/SortDirection"
+            }
+          },
           {
             "name": "includeUnknownSeriesItems",
             "in": "query",
@@ -5162,11 +5897,61 @@
               "type": "boolean",
               "default": false
             }
+          },
+          {
+            "name": "seriesIds",
+            "in": "query",
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "integer",
+                "format": "int32"
+              }
+            }
+          },
+          {
+            "name": "protocol",
+            "in": "query",
+            "schema": {
+              "$ref": "#/components/schemas/DownloadProtocol"
+            }
+          },
+          {
+            "name": "languages",
+            "in": "query",
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "integer",
+                "format": "int32"
+              }
+            }
+          },
+          {
+            "name": "quality",
+            "in": "query",
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "integer",
+                "format": "int32"
+              }
+            }
+          },
+          {
+            "name": "status",
+            "in": "query",
+            "schema": {
+              "type": "array",
+              "items": {
+                "$ref": "#/components/schemas/QueueStatus"
+              }
+            }
           }
         ],
         "responses": {
           "200": {
-            "description": "Success",
+            "description": "OK",
             "content": {
               "application/json": {
                 "schema": {
@@ -5196,7 +5981,7 @@
         ],
         "responses": {
           "200": {
-            "description": "Success"
+            "description": "OK"
           }
         }
       }
@@ -5217,7 +6002,7 @@
         },
         "responses": {
           "200": {
-            "description": "Success"
+            "description": "OK"
           }
         }
       }
@@ -5266,7 +6051,7 @@
         ],
         "responses": {
           "200": {
-            "description": "Success",
+            "description": "OK",
             "content": {
               "application/json": {
                 "schema": {
@@ -5281,36 +6066,6 @@
         }
       }
     },
-    "/api/v3/queue/details/{id}": {
-      "get": {
-        "tags": [
-          "QueueDetails"
-        ],
-        "parameters": [
-          {
-            "name": "id",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "integer",
-              "format": "int32"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Success",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/QueueResource"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
     "/api/v3/queue/status": {
       "get": {
         "tags": [
@@ -5318,37 +6073,7 @@
         ],
         "responses": {
           "200": {
-            "description": "Success",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/QueueStatusResource"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/api/v3/queue/status/{id}": {
-      "get": {
-        "tags": [
-          "QueueStatus"
-        ],
-        "parameters": [
-          {
-            "name": "id",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "integer",
-              "format": "int32"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Success",
+            "description": "OK",
             "content": {
               "application/json": {
                 "schema": {
@@ -5376,7 +6101,7 @@
         },
         "responses": {
           "200": {
-            "description": "Success"
+            "description": "OK"
           }
         }
       },
@@ -5412,7 +6137,7 @@
         ],
         "responses": {
           "200": {
-            "description": "Success",
+            "description": "OK",
             "content": {
               "application/json": {
                 "schema": {
@@ -5420,36 +6145,6 @@
                   "items": {
                     "$ref": "#/components/schemas/ReleaseResource"
                   }
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/api/v3/release/{id}": {
-      "get": {
-        "tags": [
-          "Release"
-        ],
-        "parameters": [
-          {
-            "name": "id",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "integer",
-              "format": "int32"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Success",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ReleaseResource"
                 }
               }
             }
@@ -5483,7 +6178,7 @@
         },
         "responses": {
           "200": {
-            "description": "Success",
+            "description": "OK",
             "content": {
               "text/plain": {
                 "schema": {
@@ -5510,7 +6205,7 @@
         ],
         "responses": {
           "200": {
-            "description": "Success",
+            "description": "OK",
             "content": {
               "text/plain": {
                 "schema": {
@@ -5559,7 +6254,7 @@
         ],
         "responses": {
           "200": {
-            "description": "Success"
+            "description": "OK"
           }
         }
       },
@@ -5598,7 +6293,7 @@
         },
         "responses": {
           "200": {
-            "description": "Success",
+            "description": "OK",
             "content": {
               "text/plain": {
                 "schema": {
@@ -5636,7 +6331,7 @@
         ],
         "responses": {
           "200": {
-            "description": "Success",
+            "description": "OK",
             "content": {
               "application/json": {
                 "schema": {
@@ -5664,7 +6359,7 @@
         },
         "responses": {
           "200": {
-            "description": "Success",
+            "description": "OK",
             "content": {
               "text/plain": {
                 "schema": {
@@ -5695,36 +6390,6 @@
         }
       }
     },
-    "/api/v3/release/push/{id}": {
-      "get": {
-        "tags": [
-          "ReleasePush"
-        ],
-        "parameters": [
-          {
-            "name": "id",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "integer",
-              "format": "int32"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Success",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ReleaseResource"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
     "/api/v3/remotepathmapping": {
       "post": {
         "tags": [
@@ -5741,7 +6406,7 @@
         },
         "responses": {
           "200": {
-            "description": "Success",
+            "description": "OK",
             "content": {
               "text/plain": {
                 "schema": {
@@ -5768,7 +6433,7 @@
         ],
         "responses": {
           "200": {
-            "description": "Success",
+            "description": "OK",
             "content": {
               "application/json": {
                 "schema": {
@@ -5801,7 +6466,7 @@
         ],
         "responses": {
           "200": {
-            "description": "Success"
+            "description": "OK"
           }
         }
       },
@@ -5840,7 +6505,7 @@
         },
         "responses": {
           "200": {
-            "description": "Success",
+            "description": "OK",
             "content": {
               "text/plain": {
                 "schema": {
@@ -5878,7 +6543,7 @@
         ],
         "responses": {
           "200": {
-            "description": "Success",
+            "description": "OK",
             "content": {
               "application/json": {
                 "schema": {
@@ -5915,7 +6580,7 @@
         ],
         "responses": {
           "200": {
-            "description": "Success",
+            "description": "OK",
             "content": {
               "application/json": {
                 "schema": {
@@ -5946,7 +6611,7 @@
         },
         "responses": {
           "200": {
-            "description": "Success",
+            "description": "OK",
             "content": {
               "text/plain": {
                 "schema": {
@@ -5973,7 +6638,7 @@
         ],
         "responses": {
           "200": {
-            "description": "Success",
+            "description": "OK",
             "content": {
               "application/json": {
                 "schema": {
@@ -6006,7 +6671,7 @@
         ],
         "responses": {
           "200": {
-            "description": "Success"
+            "description": "OK"
           }
         }
       },
@@ -6027,7 +6692,7 @@
         ],
         "responses": {
           "200": {
-            "description": "Success",
+            "description": "OK",
             "content": {
               "application/json": {
                 "schema": {
@@ -6055,7 +6720,7 @@
         },
         "responses": {
           "200": {
-            "description": "Success"
+            "description": "OK"
           }
         }
       }
@@ -6085,7 +6750,7 @@
         ],
         "responses": {
           "200": {
-            "description": "Success",
+            "description": "OK",
             "content": {
               "application/json": {
                 "schema": {
@@ -6114,19 +6779,9 @@
         },
         "responses": {
           "200": {
-            "description": "Success",
+            "description": "OK",
             "content": {
-              "text/plain": {
-                "schema": {
-                  "$ref": "#/components/schemas/SeriesResource"
-                }
-              },
               "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/SeriesResource"
-                }
-              },
-              "text/json": {
                 "schema": {
                   "$ref": "#/components/schemas/SeriesResource"
                 }
@@ -6137,11 +6792,55 @@
       }
     },
     "/api/v3/series/{id}": {
+      "get": {
+        "tags": [
+          "Series"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          },
+          {
+            "name": "includeSeasonImages",
+            "in": "query",
+            "schema": {
+              "type": "boolean",
+              "default": false
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SeriesResource"
+                }
+              }
+            }
+          }
+        }
+      },
       "put": {
         "tags": [
           "Series"
         ],
         "parameters": [
+          {
+            "name": "moveFiles",
+            "in": "query",
+            "schema": {
+              "type": "boolean",
+              "default": false
+            }
+          },
           {
             "name": "id",
             "in": "path",
@@ -6162,19 +6861,9 @@
         },
         "responses": {
           "200": {
-            "description": "Success",
+            "description": "OK",
             "content": {
-              "text/plain": {
-                "schema": {
-                  "$ref": "#/components/schemas/SeriesResource"
-                }
-              },
               "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/SeriesResource"
-                }
-              },
-              "text/json": {
                 "schema": {
                   "$ref": "#/components/schemas/SeriesResource"
                 }
@@ -6196,39 +6885,27 @@
               "type": "integer",
               "format": "int32"
             }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Success"
-          }
-        }
-      },
-      "get": {
-        "tags": [
-          "Series"
-        ],
-        "parameters": [
+          },
           {
-            "name": "id",
-            "in": "path",
-            "required": true,
+            "name": "deleteFiles",
+            "in": "query",
             "schema": {
-              "type": "integer",
-              "format": "int32"
+              "type": "boolean",
+              "default": false
+            }
+          },
+          {
+            "name": "addImportListExclusion",
+            "in": "query",
+            "schema": {
+              "type": "boolean",
+              "default": false
             }
           }
         ],
         "responses": {
           "200": {
-            "description": "Success",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/SeriesResource"
-                }
-              }
-            }
+            "description": "OK"
           }
         }
       }
@@ -6259,7 +6936,7 @@
         },
         "responses": {
           "200": {
-            "description": "Success"
+            "description": "OK"
           }
         }
       },
@@ -6288,7 +6965,30 @@
         },
         "responses": {
           "200": {
-            "description": "Success"
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/v3/series/{id}/folder": {
+      "get": {
+        "tags": [
+          "SeriesFolder"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
           }
         }
       }
@@ -6328,7 +7028,7 @@
         },
         "responses": {
           "200": {
-            "description": "Success"
+            "description": "OK"
           }
         }
       }
@@ -6349,7 +7049,33 @@
         ],
         "responses": {
           "200": {
-            "description": "Success"
+            "description": "OK",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/SeriesResource"
+                  }
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/SeriesResource"
+                  }
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/SeriesResource"
+                  }
+                }
+              }
+            }
           }
         }
       }
@@ -6372,7 +7098,7 @@
         ],
         "responses": {
           "200": {
-            "description": "Success"
+            "description": "OK"
           }
         }
       }
@@ -6394,7 +7120,7 @@
         ],
         "responses": {
           "200": {
-            "description": "Success"
+            "description": "OK"
           }
         }
       }
@@ -6417,7 +7143,7 @@
         ],
         "responses": {
           "200": {
-            "description": "Success"
+            "description": "OK"
           }
         }
       }
@@ -6429,7 +7155,7 @@
         ],
         "responses": {
           "200": {
-            "description": "Success",
+            "description": "OK",
             "content": {
               "application/json": {
                 "schema": {
@@ -6448,7 +7174,7 @@
         ],
         "responses": {
           "200": {
-            "description": "Success"
+            "description": "OK"
           }
         }
       }
@@ -6460,7 +7186,7 @@
         ],
         "responses": {
           "200": {
-            "description": "Success"
+            "description": "OK"
           }
         }
       }
@@ -6472,7 +7198,7 @@
         ],
         "responses": {
           "200": {
-            "description": "Success"
+            "description": "OK"
           }
         }
       }
@@ -6484,7 +7210,7 @@
         ],
         "responses": {
           "200": {
-            "description": "Success"
+            "description": "OK"
           }
         }
       }
@@ -6496,7 +7222,7 @@
         ],
         "responses": {
           "200": {
-            "description": "Success",
+            "description": "OK",
             "content": {
               "application/json": {
                 "schema": {
@@ -6525,7 +7251,7 @@
         },
         "responses": {
           "200": {
-            "description": "Success",
+            "description": "OK",
             "content": {
               "text/plain": {
                 "schema": {
@@ -6573,7 +7299,7 @@
         },
         "responses": {
           "200": {
-            "description": "Success",
+            "description": "OK",
             "content": {
               "text/plain": {
                 "schema": {
@@ -6611,7 +7337,7 @@
         ],
         "responses": {
           "200": {
-            "description": "Success"
+            "description": "OK"
           }
         }
       },
@@ -6632,7 +7358,7 @@
         ],
         "responses": {
           "200": {
-            "description": "Success",
+            "description": "OK",
             "content": {
               "application/json": {
                 "schema": {
@@ -6651,7 +7377,7 @@
         ],
         "responses": {
           "200": {
-            "description": "Success",
+            "description": "OK",
             "content": {
               "application/json": {
                 "schema": {
@@ -6684,7 +7410,7 @@
         ],
         "responses": {
           "200": {
-            "description": "Success",
+            "description": "OK",
             "content": {
               "application/json": {
                 "schema": {
@@ -6703,7 +7429,7 @@
         ],
         "responses": {
           "200": {
-            "description": "Success",
+            "description": "OK",
             "content": {
               "text/plain": {
                 "schema": {
@@ -6752,7 +7478,7 @@
         ],
         "responses": {
           "200": {
-            "description": "Success",
+            "description": "OK",
             "content": {
               "application/json": {
                 "schema": {
@@ -6790,7 +7516,7 @@
         },
         "responses": {
           "200": {
-            "description": "Success",
+            "description": "OK",
             "content": {
               "text/plain": {
                 "schema": {
@@ -6828,7 +7554,7 @@
         ],
         "responses": {
           "200": {
-            "description": "Success",
+            "description": "OK",
             "content": {
               "application/json": {
                 "schema": {
@@ -6847,7 +7573,7 @@
         ],
         "responses": {
           "200": {
-            "description": "Success",
+            "description": "OK",
             "content": {
               "application/json": {
                 "schema": {
@@ -6866,7 +7592,7 @@
         ],
         "responses": {
           "200": {
-            "description": "Success",
+            "description": "OK",
             "content": {
               "application/json": {
                 "schema": {
@@ -6888,7 +7614,7 @@
         ],
         "responses": {
           "200": {
-            "description": "Success",
+            "description": "OK",
             "content": {
               "application/json": {
                 "schema": {
@@ -6921,7 +7647,7 @@
         ],
         "responses": {
           "200": {
-            "description": "Success"
+            "description": "OK"
           }
         }
       }
@@ -7200,13 +7926,6 @@
           "sortDirection": {
             "$ref": "#/components/schemas/SortDirection"
           },
-          "filters": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/PagingResourceFilter"
-            },
-            "nullable": true
-          },
           "totalRecords": {
             "type": "integer",
             "format": "int32"
@@ -7320,6 +8039,9 @@
           "status": {
             "$ref": "#/components/schemas/CommandStatus"
           },
+          "result": {
+            "$ref": "#/components/schemas/CommandResult"
+          },
           "queued": {
             "type": "string",
             "format": "date-time"
@@ -7335,7 +8057,9 @@
             "nullable": true
           },
           "duration": {
-            "$ref": "#/components/schemas/TimeSpan"
+            "type": "string",
+            "format": "date-span",
+            "nullable": true
           },
           "exception": {
             "type": "string",
@@ -7366,6 +8090,14 @@
           }
         },
         "additionalProperties": false
+      },
+      "CommandResult": {
+        "enum": [
+          "unknown",
+          "successful",
+          "unsuccessful"
+        ],
+        "type": "string"
       },
       "CommandStatus": {
         "enum": [
@@ -7408,6 +8140,25 @@
               "type": "object",
               "additionalProperties": { }
             },
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "CustomFormatBulkResource": {
+        "type": "object",
+        "properties": {
+          "ids": {
+            "uniqueItems": true,
+            "type": "array",
+            "items": {
+              "type": "integer",
+              "format": "int32"
+            },
+            "nullable": true
+          },
+          "includeCustomFormatWhenRenaming": {
+            "type": "boolean",
             "nullable": true
           }
         },
@@ -7483,6 +8234,13 @@
           }
         },
         "additionalProperties": false
+      },
+      "DatabaseType": {
+        "enum": [
+          "sqLite",
+          "postgreSQL"
+        ],
+        "type": "string"
       },
       "DelayProfileResource": {
         "type": "object",
@@ -7560,6 +8318,48 @@
         },
         "additionalProperties": false
       },
+      "DownloadClientBulkResource": {
+        "type": "object",
+        "properties": {
+          "ids": {
+            "type": "array",
+            "items": {
+              "type": "integer",
+              "format": "int32"
+            },
+            "nullable": true
+          },
+          "tags": {
+            "type": "array",
+            "items": {
+              "type": "integer",
+              "format": "int32"
+            },
+            "nullable": true
+          },
+          "applyTags": {
+            "$ref": "#/components/schemas/ApplyTags"
+          },
+          "enable": {
+            "type": "boolean",
+            "nullable": true
+          },
+          "priority": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "removeCompletedDownloads": {
+            "type": "boolean",
+            "nullable": true
+          },
+          "removeFailedDownloads": {
+            "type": "boolean",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
       "DownloadClientConfigResource": {
         "type": "object",
         "properties": {
@@ -7575,6 +8375,9 @@
             "type": "boolean"
           },
           "autoRedownloadFailed": {
+            "type": "boolean"
+          },
+          "autoRedownloadFailedFromInteractiveSearch": {
             "type": "boolean"
           }
         },
@@ -7748,6 +8551,18 @@
             },
             "nullable": true
           },
+          "customFormatScore": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "indexerFlags": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "releaseType": {
+            "$ref": "#/components/schemas/ReleaseType"
+          },
           "mediaInfo": {
             "$ref": "#/components/schemas/MediaInfoResource"
           },
@@ -7810,6 +8625,19 @@
             "format": "date-time",
             "nullable": true
           },
+          "lastSearchTime": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "runtime": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "finaleType": {
+            "type": "string",
+            "nullable": true
+          },
           "overview": {
             "type": "string",
             "nullable": true
@@ -7856,10 +8684,6 @@
             "format": "date-time",
             "nullable": true
           },
-          "seriesTitle": {
-            "type": "string",
-            "nullable": true
-          },
           "series": {
             "$ref": "#/components/schemas/SeriesResource"
           },
@@ -7869,9 +8693,6 @@
               "$ref": "#/components/schemas/MediaCover"
             },
             "nullable": true
-          },
-          "grabbed": {
-            "type": "boolean"
           }
         },
         "additionalProperties": false
@@ -7893,13 +8714,6 @@
           },
           "sortDirection": {
             "$ref": "#/components/schemas/SortDirection"
-          },
-          "filters": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/PagingResourceFilter"
-            },
-            "nullable": true
           },
           "totalRecords": {
             "type": "integer",
@@ -7963,6 +8777,10 @@
             "type": "string",
             "nullable": true
           },
+          "helpTextWarning": {
+            "type": "string",
+            "nullable": true
+          },
           "helpLink": {
             "type": "string",
             "nullable": true
@@ -7998,6 +8816,13 @@
           },
           "privacy": {
             "$ref": "#/components/schemas/PrivacyLevel"
+          },
+          "placeholder": {
+            "type": "string",
+            "nullable": true
+          },
+          "isFloat": {
+            "type": "boolean"
           }
         },
         "additionalProperties": false
@@ -8132,13 +8957,6 @@
           "sortDirection": {
             "$ref": "#/components/schemas/SortDirection"
           },
-          "filters": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/PagingResourceFilter"
-            },
-            "nullable": true
-          },
           "totalRecords": {
             "type": "integer",
             "format": "int32"
@@ -8195,9 +9013,17 @@
             "type": "string",
             "nullable": true
           },
+          "passwordConfirmation": {
+            "type": "string",
+            "nullable": true
+          },
           "logLevel": {
             "type": "string",
             "nullable": true
+          },
+          "logSizeLimit": {
+            "type": "integer",
+            "format": "int32"
           },
           "consoleLogLevel": {
             "type": "string",
@@ -8284,6 +9110,9 @@
           "backupRetention": {
             "type": "integer",
             "format": "int32"
+          },
+          "trustCgnatIpAddresses": {
+            "type": "boolean"
           }
         },
         "additionalProperties": false
@@ -8330,6 +9159,76 @@
         },
         "additionalProperties": false
       },
+      "ImportListBulkResource": {
+        "type": "object",
+        "properties": {
+          "ids": {
+            "type": "array",
+            "items": {
+              "type": "integer",
+              "format": "int32"
+            },
+            "nullable": true
+          },
+          "tags": {
+            "type": "array",
+            "items": {
+              "type": "integer",
+              "format": "int32"
+            },
+            "nullable": true
+          },
+          "applyTags": {
+            "$ref": "#/components/schemas/ApplyTags"
+          },
+          "enableAutomaticAdd": {
+            "type": "boolean",
+            "nullable": true
+          },
+          "rootFolderPath": {
+            "type": "string",
+            "nullable": true
+          },
+          "qualityProfileId": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "ImportListConfigResource": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "listSyncLevel": {
+            "$ref": "#/components/schemas/ListSyncLevelType"
+          },
+          "listSyncTag": {
+            "type": "integer",
+            "format": "int32"
+          }
+        },
+        "additionalProperties": false
+      },
+      "ImportListExclusionBulkResource": {
+        "type": "object",
+        "properties": {
+          "ids": {
+            "uniqueItems": true,
+            "type": "array",
+            "items": {
+              "type": "integer",
+              "format": "int32"
+            },
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
       "ImportListExclusionResource": {
         "type": "object",
         "properties": {
@@ -8343,6 +9242,38 @@
           },
           "title": {
             "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "ImportListExclusionResourcePagingResource": {
+        "type": "object",
+        "properties": {
+          "page": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "pageSize": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "sortKey": {
+            "type": "string",
+            "nullable": true
+          },
+          "sortDirection": {
+            "$ref": "#/components/schemas/SortDirection"
+          },
+          "totalRecords": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "records": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ImportListExclusionResource"
+            },
             "nullable": true
           }
         },
@@ -8404,8 +9335,14 @@
           "enableAutomaticAdd": {
             "type": "boolean"
           },
+          "searchForMissingEpisodes": {
+            "type": "boolean"
+          },
           "shouldMonitor": {
             "$ref": "#/components/schemas/MonitorTypes"
+          },
+          "monitorNewItems": {
+            "$ref": "#/components/schemas/NewItemMonitorTypes"
           },
           "rootFolderPath": {
             "type": "string",
@@ -8429,7 +9366,8 @@
             "format": "int32"
           },
           "minRefreshInterval": {
-            "$ref": "#/components/schemas/TimeSpan"
+            "type": "string",
+            "format": "date-span"
           }
         },
         "additionalProperties": false
@@ -8444,6 +9382,61 @@
           "advanced"
         ],
         "type": "string"
+      },
+      "ImportRejectionResource": {
+        "type": "object",
+        "properties": {
+          "reason": {
+            "type": "string",
+            "nullable": true
+          },
+          "type": {
+            "$ref": "#/components/schemas/RejectionType"
+          }
+        },
+        "additionalProperties": false
+      },
+      "IndexerBulkResource": {
+        "type": "object",
+        "properties": {
+          "ids": {
+            "type": "array",
+            "items": {
+              "type": "integer",
+              "format": "int32"
+            },
+            "nullable": true
+          },
+          "tags": {
+            "type": "array",
+            "items": {
+              "type": "integer",
+              "format": "int32"
+            },
+            "nullable": true
+          },
+          "applyTags": {
+            "$ref": "#/components/schemas/ApplyTags"
+          },
+          "enableRss": {
+            "type": "boolean",
+            "nullable": true
+          },
+          "enableAutomaticSearch": {
+            "type": "boolean",
+            "nullable": true
+          },
+          "enableInteractiveSearch": {
+            "type": "boolean",
+            "nullable": true
+          },
+          "priority": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
       },
       "IndexerConfigResource": {
         "type": "object",
@@ -8467,6 +9460,25 @@
           "rssSyncInterval": {
             "type": "integer",
             "format": "int32"
+          }
+        },
+        "additionalProperties": false
+      },
+      "IndexerFlagResource": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "name": {
+            "type": "string",
+            "nullable": true
+          },
+          "nameLower": {
+            "type": "string",
+            "nullable": true,
+            "readOnly": true
           }
         },
         "additionalProperties": false
@@ -8633,6 +9645,15 @@
         },
         "additionalProperties": false
       },
+      "ListSyncLevelType": {
+        "enum": [
+          "disabled",
+          "logOnly",
+          "keepAndUnmonitor",
+          "keepAndTag"
+        ],
+        "type": "string"
+      },
       "LocalizationLanguageResource": {
         "type": "object",
         "properties": {
@@ -8743,13 +9764,6 @@
           "sortDirection": {
             "$ref": "#/components/schemas/SortDirection"
           },
-          "filters": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/PagingResourceFilter"
-            },
-            "nullable": true
-          },
           "totalRecords": {
             "type": "integer",
             "format": "int32"
@@ -8817,10 +9831,28 @@
             "type": "string",
             "nullable": true
           },
+          "customFormats": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/CustomFormatResource"
+            },
+            "nullable": true
+          },
+          "customFormatScore": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "indexerFlags": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "releaseType": {
+            "$ref": "#/components/schemas/ReleaseType"
+          },
           "rejections": {
             "type": "array",
             "items": {
-              "$ref": "#/components/schemas/Rejection"
+              "$ref": "#/components/schemas/ImportRejectionResource"
             },
             "nullable": true
           }
@@ -8903,10 +9935,21 @@
             },
             "nullable": true
           },
+          "customFormatScore": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "indexerFlags": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "releaseType": {
+            "$ref": "#/components/schemas/ReleaseType"
+          },
           "rejections": {
             "type": "array",
             "items": {
-              "$ref": "#/components/schemas/Rejection"
+              "$ref": "#/components/schemas/ImportRejectionResource"
             },
             "nullable": true
           }
@@ -8937,7 +9980,8 @@
           "banner",
           "fanart",
           "screenshot",
-          "headshot"
+          "headshot",
+          "clearlogo"
         ],
         "type": "string"
       },
@@ -9068,6 +10112,13 @@
           "copyUsingHardlinks": {
             "type": "boolean"
           },
+          "useScriptImport": {
+            "type": "boolean"
+          },
+          "scriptImportPath": {
+            "type": "string",
+            "nullable": true
+          },
           "importExtraFiles": {
             "type": "boolean"
           },
@@ -9148,11 +10199,14 @@
           "missing",
           "existing",
           "firstSeason",
+          "lastSeason",
           "latestSeason",
           "pilot",
+          "recent",
           "monitorSpecials",
-          "UnmonitorSpecials",
-          "none"
+          "unmonitorSpecials",
+          "none",
+          "skip"
         ],
         "type": "string"
       },
@@ -9184,6 +10238,14 @@
           "replaceIllegalCharacters": {
             "type": "boolean"
           },
+          "colonReplacementFormat": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "customColonReplacementFormat": {
+            "type": "string",
+            "nullable": true
+          },
           "multiEpisodeStyle": {
             "type": "integer",
             "format": "int32"
@@ -9211,29 +10273,16 @@
           "specialsFolderFormat": {
             "type": "string",
             "nullable": true
-          },
-          "includeSeriesTitle": {
-            "type": "boolean"
-          },
-          "includeEpisodeTitle": {
-            "type": "boolean"
-          },
-          "includeQuality": {
-            "type": "boolean"
-          },
-          "replaceSpaces": {
-            "type": "boolean"
-          },
-          "separator": {
-            "type": "string",
-            "nullable": true
-          },
-          "numberStyle": {
-            "type": "string",
-            "nullable": true
           }
         },
         "additionalProperties": false
+      },
+      "NewItemMonitorTypes": {
+        "enum": [
+          "all",
+          "none"
+        ],
+        "type": "string"
       },
       "NotificationResource": {
         "type": "object",
@@ -9301,7 +10350,13 @@
           "onUpgrade": {
             "type": "boolean"
           },
+          "onImportComplete": {
+            "type": "boolean"
+          },
           "onRename": {
+            "type": "boolean"
+          },
+          "onSeriesAdd": {
             "type": "boolean"
           },
           "onSeriesDelete": {
@@ -9316,7 +10371,16 @@
           "onHealthIssue": {
             "type": "boolean"
           },
+          "includeHealthWarnings": {
+            "type": "boolean"
+          },
+          "onHealthRestored": {
+            "type": "boolean"
+          },
           "onApplicationUpdate": {
+            "type": "boolean"
+          },
+          "onManualInteractionRequired": {
             "type": "boolean"
           },
           "supportsOnGrab": {
@@ -9328,7 +10392,13 @@
           "supportsOnUpgrade": {
             "type": "boolean"
           },
+          "supportsOnImportComplete": {
+            "type": "boolean"
+          },
           "supportsOnRename": {
+            "type": "boolean"
+          },
+          "supportsOnSeriesAdd": {
             "type": "boolean"
           },
           "supportsOnSeriesDelete": {
@@ -9343,27 +10413,16 @@
           "supportsOnHealthIssue": {
             "type": "boolean"
           },
+          "supportsOnHealthRestored": {
+            "type": "boolean"
+          },
           "supportsOnApplicationUpdate": {
             "type": "boolean"
           },
-          "includeHealthWarnings": {
+          "supportsOnManualInteractionRequired": {
             "type": "boolean"
           },
           "testCommand": {
-            "type": "string",
-            "nullable": true
-          }
-        },
-        "additionalProperties": false
-      },
-      "PagingResourceFilter": {
-        "type": "object",
-        "properties": {
-          "key": {
-            "type": "string",
-            "nullable": true
-          },
-          "value": {
             "type": "string",
             "nullable": true
           }
@@ -9393,6 +10452,24 @@
               "$ref": "#/components/schemas/EpisodeResource"
             },
             "nullable": true
+          },
+          "languages": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Language"
+            },
+            "nullable": true
+          },
+          "customFormats": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/CustomFormatResource"
+            },
+            "nullable": true
+          },
+          "customFormatScore": {
+            "type": "integer",
+            "format": "int32"
           }
         },
         "additionalProperties": false
@@ -9465,6 +10542,12 @@
           "isSeasonExtra": {
             "type": "boolean"
           },
+          "isSplitEpisode": {
+            "type": "boolean"
+          },
+          "isMiniSeries": {
+            "type": "boolean"
+          },
           "special": {
             "type": "boolean"
           },
@@ -9504,6 +10587,9 @@
           "isPossibleSceneSeasonSpecial": {
             "type": "boolean",
             "readOnly": true
+          },
+          "releaseType": {
+            "$ref": "#/components/schemas/ReleaseType"
           }
         },
         "additionalProperties": false
@@ -9601,6 +10687,20 @@
             "$ref": "#/components/schemas/QualitySource"
           },
           "resolution": {
+            "type": "integer",
+            "format": "int32"
+          }
+        },
+        "additionalProperties": false
+      },
+      "QualityDefinitionLimitsResource": {
+        "type": "object",
+        "properties": {
+          "min": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "max": {
             "type": "integer",
             "format": "int32"
           }
@@ -9715,6 +10815,10 @@
             "type": "integer",
             "format": "int32"
           },
+          "minUpgradeFormatScore": {
+            "type": "integer",
+            "format": "int32"
+          },
           "formatItems": {
             "type": "array",
             "items": {
@@ -9769,6 +10873,11 @@
             "format": "int32",
             "nullable": true
           },
+          "seasonNumber": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
           "series": {
             "$ref": "#/components/schemas/SeriesResource"
           },
@@ -9792,6 +10901,10 @@
             },
             "nullable": true
           },
+          "customFormatScore": {
+            "type": "integer",
+            "format": "int32"
+          },
           "size": {
             "type": "number",
             "format": "double"
@@ -9800,21 +10913,18 @@
             "type": "string",
             "nullable": true
           },
-          "sizeleft": {
-            "type": "number",
-            "format": "double"
-          },
-          "timeleft": {
-            "$ref": "#/components/schemas/TimeSpan"
-          },
           "estimatedCompletionTime": {
             "type": "string",
             "format": "date-time",
             "nullable": true
           },
-          "status": {
+          "added": {
             "type": "string",
+            "format": "date-time",
             "nullable": true
+          },
+          "status": {
+            "$ref": "#/components/schemas/QueueStatus"
           },
           "trackedDownloadStatus": {
             "$ref": "#/components/schemas/TrackedDownloadStatus"
@@ -9844,6 +10954,9 @@
             "type": "string",
             "nullable": true
           },
+          "downloadClientHasPostImportCategory": {
+            "type": "boolean"
+          },
           "indexer": {
             "type": "string",
             "nullable": true
@@ -9851,6 +10964,20 @@
           "outputPath": {
             "type": "string",
             "nullable": true
+          },
+          "episodeHasFile": {
+            "type": "boolean"
+          },
+          "sizeleft": {
+            "type": "number",
+            "format": "double",
+            "deprecated": true
+          },
+          "timeleft": {
+            "type": "string",
+            "format": "date-span",
+            "nullable": true,
+            "deprecated": true
           }
         },
         "additionalProperties": false
@@ -9873,13 +11000,6 @@
           "sortDirection": {
             "$ref": "#/components/schemas/SortDirection"
           },
-          "filters": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/PagingResourceFilter"
-            },
-            "nullable": true
-          },
           "totalRecords": {
             "type": "integer",
             "format": "int32"
@@ -9893,6 +11013,21 @@
           }
         },
         "additionalProperties": false
+      },
+      "QueueStatus": {
+        "enum": [
+          "unknown",
+          "queued",
+          "paused",
+          "downloading",
+          "completed",
+          "failed",
+          "warning",
+          "delay",
+          "downloadClientUnavailable",
+          "fallback"
+        ],
+        "type": "string"
       },
       "QueueStatusResource": {
         "type": "object",
@@ -9942,25 +11077,39 @@
         },
         "additionalProperties": false
       },
-      "Rejection": {
-        "type": "object",
-        "properties": {
-          "reason": {
-            "type": "string",
-            "nullable": true
-          },
-          "type": {
-            "$ref": "#/components/schemas/RejectionType"
-          }
-        },
-        "additionalProperties": false
-      },
       "RejectionType": {
         "enum": [
           "permanent",
           "temporary"
         ],
         "type": "string"
+      },
+      "ReleaseEpisodeResource": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "seasonNumber": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "episodeNumber": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "absoluteEpisodeNumber": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "title": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
       },
       "ReleaseProfileResource": {
         "type": "object",
@@ -10122,6 +11271,18 @@
             },
             "nullable": true
           },
+          "mappedSeriesId": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "mappedEpisodeInfo": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ReleaseEpisodeResource"
+            },
+            "nullable": true
+          },
           "approved": {
             "type": "boolean"
           },
@@ -10138,6 +11299,10 @@
           "tvRageId": {
             "type": "integer",
             "format": "int32"
+          },
+          "imdbId": {
+            "type": "string",
+            "nullable": true
           },
           "rejections": {
             "type": "array",
@@ -10207,6 +11372,10 @@
           "protocol": {
             "$ref": "#/components/schemas/DownloadProtocol"
           },
+          "indexerFlags": {
+            "type": "integer",
+            "format": "int32"
+          },
           "isDaily": {
             "type": "boolean"
           },
@@ -10228,9 +11397,39 @@
             "type": "integer",
             "format": "int32",
             "nullable": true
+          },
+          "episodeIds": {
+            "type": "array",
+            "items": {
+              "type": "integer",
+              "format": "int32"
+            },
+            "nullable": true
+          },
+          "downloadClientId": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "downloadClient": {
+            "type": "string",
+            "nullable": true
+          },
+          "shouldOverride": {
+            "type": "boolean",
+            "nullable": true
           }
         },
         "additionalProperties": false
+      },
+      "ReleaseType": {
+        "enum": [
+          "unknown",
+          "singleEpisode",
+          "multiEpisode",
+          "seasonPack"
+        ],
+        "type": "string"
       },
       "RemotePathMappingResource": {
         "type": "object",
@@ -10495,6 +11694,9 @@
             "type": "boolean",
             "nullable": true
           },
+          "monitorNewItems": {
+            "$ref": "#/components/schemas/NewItemMonitorTypes"
+          },
           "qualityProfileId": {
             "type": "integer",
             "format": "int32",
@@ -10628,6 +11830,9 @@
           "monitored": {
             "type": "boolean"
           },
+          "monitorNewItems": {
+            "$ref": "#/components/schemas/NewItemMonitorTypes"
+          },
           "useSceneNumbering": {
             "type": "boolean"
           },
@@ -10647,7 +11852,16 @@
             "type": "integer",
             "format": "int32"
           },
+          "tmdbId": {
+            "type": "integer",
+            "format": "int32"
+          },
           "firstAired": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "lastAired": {
             "type": "string",
             "format": "date-time",
             "nullable": true
@@ -10882,7 +12096,8 @@
             "$ref": "#/components/schemas/AuthenticationType"
           },
           "sqliteVersion": {
-            "$ref": "#/components/schemas/Version"
+            "type": "string",
+            "nullable": true
           },
           "migrationVersion": {
             "type": "integer",
@@ -10893,7 +12108,8 @@
             "nullable": true
           },
           "runtimeVersion": {
-            "$ref": "#/components/schemas/Version"
+            "type": "string",
+            "nullable": true
           },
           "runtimeName": {
             "type": "string",
@@ -10917,6 +12133,13 @@
           "packageUpdateMechanismMessage": {
             "type": "string",
             "nullable": true
+          },
+          "databaseVersion": {
+            "type": "string",
+            "nullable": true
+          },
+          "databaseType": {
+            "$ref": "#/components/schemas/DatabaseType"
           }
         },
         "additionalProperties": false
@@ -10965,6 +12188,14 @@
             "nullable": true
           },
           "indexerIds": {
+            "type": "array",
+            "items": {
+              "type": "integer",
+              "format": "int32"
+            },
+            "nullable": true
+          },
+          "downloadClientIds": {
             "type": "array",
             "items": {
               "type": "integer",
@@ -11037,66 +12268,8 @@
             "format": "date-time"
           },
           "lastDuration": {
-            "$ref": "#/components/schemas/TimeSpan"
-          }
-        },
-        "additionalProperties": false
-      },
-      "TimeSpan": {
-        "type": "object",
-        "properties": {
-          "ticks": {
-            "type": "integer",
-            "format": "int64"
-          },
-          "days": {
-            "type": "integer",
-            "format": "int32",
-            "readOnly": true
-          },
-          "hours": {
-            "type": "integer",
-            "format": "int32",
-            "readOnly": true
-          },
-          "milliseconds": {
-            "type": "integer",
-            "format": "int32",
-            "readOnly": true
-          },
-          "minutes": {
-            "type": "integer",
-            "format": "int32",
-            "readOnly": true
-          },
-          "seconds": {
-            "type": "integer",
-            "format": "int32",
-            "readOnly": true
-          },
-          "totalDays": {
-            "type": "number",
-            "format": "double",
-            "readOnly": true
-          },
-          "totalHours": {
-            "type": "number",
-            "format": "double",
-            "readOnly": true
-          },
-          "totalMilliseconds": {
-            "type": "number",
-            "format": "double",
-            "readOnly": true
-          },
-          "totalMinutes": {
-            "type": "number",
-            "format": "double",
-            "readOnly": true
-          },
-          "totalSeconds": {
-            "type": "number",
-            "format": "double",
+            "type": "string",
+            "format": "date-span",
             "readOnly": true
           }
         },
@@ -11105,6 +12278,7 @@
       "TrackedDownloadState": {
         "enum": [
           "downloading",
+          "importBlocked",
           "importPending",
           "importing",
           "imported",
@@ -11239,7 +12413,8 @@
             "format": "int32"
           },
           "version": {
-            "$ref": "#/components/schemas/Version"
+            "type": "string",
+            "nullable": true
           },
           "branch": {
             "type": "string",
@@ -11280,42 +12455,6 @@
           }
         },
         "additionalProperties": false
-      },
-      "Version": {
-        "type": "object",
-        "properties": {
-          "major": {
-            "type": "integer",
-            "format": "int32",
-            "readOnly": true
-          },
-          "minor": {
-            "type": "integer",
-            "format": "int32",
-            "readOnly": true
-          },
-          "build": {
-            "type": "integer",
-            "format": "int32",
-            "readOnly": true
-          },
-          "revision": {
-            "type": "integer",
-            "format": "int32",
-            "readOnly": true
-          },
-          "majorRevision": {
-            "type": "integer",
-            "format": "int32",
-            "readOnly": true
-          },
-          "minorRevision": {
-            "type": "integer",
-            "format": "int32",
-            "readOnly": true
-          }
-        },
-        "additionalProperties": false
       }
     },
     "securitySchemes": {
@@ -11327,7 +12466,7 @@
       },
       "apikey": {
         "type": "apiKey",
-        "description": "Apikey passed as header",
+        "description": "Apikey passed as query parameter",
         "name": "apikey",
         "in": "query"
       }

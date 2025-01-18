@@ -1,4 +1,5 @@
 import React, { useCallback, useState } from 'react';
+import { useSelector } from 'react-redux';
 import ProtocolLabel from 'Activity/Queue/ProtocolLabel';
 import Icon from 'Components/Icon';
 import Link from 'Components/Link/Link';
@@ -8,21 +9,20 @@ import TableRowCell from 'Components/Table/Cells/TableRowCell';
 import TableRow from 'Components/Table/TableRow';
 import Popover from 'Components/Tooltip/Popover';
 import Tooltip from 'Components/Tooltip/Tooltip';
-import type DownloadProtocol from 'DownloadClient/DownloadProtocol';
 import EpisodeFormats from 'Episode/EpisodeFormats';
 import EpisodeLanguages from 'Episode/EpisodeLanguages';
 import EpisodeQuality from 'Episode/EpisodeQuality';
+import IndexerFlags from 'Episode/IndexerFlags';
 import { icons, kinds, tooltipPositions } from 'Helpers/Props';
-import Language from 'Language/Language';
-import { QualityModel } from 'Quality/Quality';
-import CustomFormat from 'typings/CustomFormat';
+import createUISettingsSelector from 'Store/Selectors/createUISettingsSelector';
+import Release from 'typings/Release';
 import formatDateTime from 'Utilities/Date/formatDateTime';
 import formatAge from 'Utilities/Number/formatAge';
 import formatBytes from 'Utilities/Number/formatBytes';
-import formatPreferredWordScore from 'Utilities/Number/formatPreferredWordScore';
+import formatCustomFormatScore from 'Utilities/Number/formatCustomFormatScore';
+import translate from 'Utilities/String/translate';
 import OverrideMatchModal from './OverrideMatch/OverrideMatchModal';
 import Peers from './Peers';
-import ReleaseEpisode from './ReleaseEpisode';
 import ReleaseSceneIndicator from './ReleaseSceneIndicator';
 import styles from './InteractiveSearchRow.css';
 
@@ -42,6 +42,18 @@ function getDownloadIcon(
   return icons.DOWNLOAD;
 }
 
+function getDownloadKind(isGrabbed: boolean, grabError?: string) {
+  if (isGrabbed) {
+    return kinds.SUCCESS;
+  }
+
+  if (grabError) {
+    return kinds.DANGER;
+  }
+
+  return kinds.DEFAULT;
+}
+
 function getDownloadTooltip(
   isGrabbing: boolean,
   isGrabbed: boolean,
@@ -50,50 +62,15 @@ function getDownloadTooltip(
   if (isGrabbing) {
     return '';
   } else if (isGrabbed) {
-    return 'Added to download queue';
+    return translate('AddedToDownloadQueue');
   } else if (grabError) {
     return grabError;
   }
 
-  return 'Add to download queue';
+  return translate('AddToDownloadQueue');
 }
 
-interface InteractiveSearchRowProps {
-  guid: string;
-  protocol: DownloadProtocol;
-  age: number;
-  ageHours: number;
-  ageMinutes: number;
-  publishDate: string;
-  title: string;
-  infoUrl: string;
-  indexerId: number;
-  indexer: string;
-  size: number;
-  seeders?: number;
-  leechers?: number;
-  quality: QualityModel;
-  languages: Language[];
-  customFormats: CustomFormat[];
-  customFormatScore: number;
-  sceneMapping?: object;
-  seasonNumber?: number;
-  episodeNumbers?: number[];
-  absoluteEpisodeNumbers?: number[];
-  mappedSeriesId?: number;
-  mappedSeasonNumber?: number;
-  mappedEpisodeNumbers?: number[];
-  mappedAbsoluteEpisodeNumbers?: number[];
-  mappedEpisodeInfo: ReleaseEpisode[];
-  rejections: string[];
-  episodeRequested: boolean;
-  downloadAllowed: boolean;
-  isDaily: boolean;
-  isGrabbing: boolean;
-  isGrabbed: boolean;
-  grabError?: string;
-  longDateFormat: string;
-  timeFormat: string;
+interface InteractiveSearchRowProps extends Release {
   searchPayload: object;
   onGrabPress(...args: unknown[]): void;
 }
@@ -126,18 +103,21 @@ function InteractiveSearchRow(props: InteractiveSearchRowProps) {
     mappedEpisodeNumbers,
     mappedAbsoluteEpisodeNumbers,
     mappedEpisodeInfo,
-    rejections,
+    indexerFlags = 0,
+    rejections = [],
     episodeRequested,
     downloadAllowed,
     isDaily,
-    isGrabbing,
-    isGrabbed,
-    longDateFormat,
-    timeFormat,
+    isGrabbing = false,
+    isGrabbed = false,
     grabError,
     searchPayload,
     onGrabPress,
   } = props;
+
+  const { longDateFormat, timeFormat } = useSelector(
+    createUISettingsSelector()
+  );
 
   const [isConfirmGrabModalOpen, setIsConfirmGrabModalOpen] = useState(false);
   const [isOverrideModalOpen, setIsOverrideModalOpen] = useState(false);
@@ -231,25 +211,36 @@ function InteractiveSearchRow(props: InteractiveSearchRowProps) {
       </TableRowCell>
 
       <TableRowCell className={styles.quality}>
-        <EpisodeQuality quality={quality} />
+        <EpisodeQuality quality={quality} showRevision={true} />
       </TableRowCell>
 
       <TableRowCell className={styles.customFormatScore}>
         <Tooltip
-          anchor={formatPreferredWordScore(
+          anchor={formatCustomFormatScore(
             customFormatScore,
             customFormats.length
           )}
           tooltip={<EpisodeFormats formats={customFormats} />}
-          position={tooltipPositions.BOTTOM}
+          position={tooltipPositions.LEFT}
         />
+      </TableRowCell>
+
+      <TableRowCell className={styles.indexerFlags}>
+        {indexerFlags ? (
+          <Popover
+            anchor={<Icon name={icons.FLAG} />}
+            title={translate('IndexerFlags')}
+            body={<IndexerFlags indexerFlags={indexerFlags} />}
+            position={tooltipPositions.LEFT}
+          />
+        ) : null}
       </TableRowCell>
 
       <TableRowCell className={styles.rejected}>
         {rejections.length ? (
           <Popover
             anchor={<Icon name={icons.DANGER} kind={kinds.DANGER} />}
-            title="Release Rejected"
+            title={translate('ReleaseRejected')}
             body={
               <ul>
                 {rejections.map((rejection, index) => {
@@ -265,7 +256,7 @@ function InteractiveSearchRow(props: InteractiveSearchRowProps) {
       <TableRowCell className={styles.download}>
         <SpinnerIconButton
           name={getDownloadIcon(isGrabbing, isGrabbed, grabError)}
-          kind={grabError ? kinds.DANGER : kinds.DEFAULT}
+          kind={getDownloadKind(isGrabbed, grabError)}
           title={getDownloadTooltip(isGrabbing, isGrabbed, grabError)}
           isSpinning={isGrabbing}
           onPress={onGrabPressWrapper}
@@ -273,7 +264,7 @@ function InteractiveSearchRow(props: InteractiveSearchRowProps) {
 
         <Link
           className={styles.manualDownloadContent}
-          title="Override and add to download queue"
+          title={translate('OverrideAndAddToDownloadQueue')}
           onPress={onOverridePress}
         >
           <div className={styles.manualDownloadContent}>
@@ -295,9 +286,11 @@ function InteractiveSearchRow(props: InteractiveSearchRowProps) {
       <ConfirmModal
         isOpen={isConfirmGrabModalOpen}
         kind={kinds.WARNING}
-        title="Grab Release"
-        message={`Sonarr was unable to determine which series and episode this release was for. Sonarr may be unable to automatically import this release. Do you want to grab '${title}'?`}
-        confirmLabel="Grab"
+        title={translate('GrabRelease')}
+        message={translate('GrabReleaseUnknownSeriesOrEpisodeMessageText', {
+          title,
+        })}
+        confirmLabel={translate('Grab')}
         onConfirm={onGrabConfirm}
         onCancel={onGrabCancel}
       />

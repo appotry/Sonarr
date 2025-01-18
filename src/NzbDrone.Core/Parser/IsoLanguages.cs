@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using NzbDrone.Core.Languages;
@@ -63,7 +64,9 @@ namespace NzbDrone.Core.Parser
             { "cze", Language.Czech },
             { "dut", Language.Dutch },
             { "mac", Language.Macedonian },
-            { "rum", Language.Romanian }
+            { "rum", Language.Romanian },
+            { "yue", Language.Chinese },
+            { "zhtw", Language.Chinese }
         };
 
         public static IsoLanguage Find(string isoCode)
@@ -85,6 +88,10 @@ namespace NzbDrone.Core.Parser
 
                 return isoLanguages.FirstOrDefault();
             }
+            else if (AlternateIsoCodeMappings.TryGetValue(isoCode, out var alternateLanguage))
+            {
+                return Get(alternateLanguage);
+            }
             else if (langCode.Length == 3)
             {
                 // Lookup ISO639-2T code
@@ -95,10 +102,6 @@ namespace NzbDrone.Core.Parser
 
                 return All.FirstOrDefault(l => l.ThreeLetterCode == langCode);
             }
-            else if (AlternateIsoCodeMappings.TryGetValue(isoCode, out var alternateLanguage))
-            {
-                return Get(alternateLanguage);
-            }
 
             return null;
         }
@@ -106,6 +109,11 @@ namespace NzbDrone.Core.Parser
         public static IsoLanguage Get(Language language)
         {
             return All.FirstOrDefault(l => l.Language == language);
+        }
+
+        public static IsoLanguage FindByName(string name)
+        {
+            return All.FirstOrDefault(l => l.Language.Name.Equals(name, StringComparison.InvariantCultureIgnoreCase));
         }
     }
 }
